@@ -1,0 +1,21 @@
+package com.woojin.winfairy.core.database
+
+import androidx.room.Database
+import androidx.room.RoomDatabase
+import com.woojin.winfairy.core.database.dao.GameRecordDao
+import com.woojin.winfairy.core.database.dao.GameVariableDao
+import com.woojin.winfairy.core.database.entity.GameRecordEntity
+import com.woojin.winfairy.core.database.entity.GameVariableEntity
+
+@Database(
+    entities = [
+        GameRecordEntity::class,
+        GameVariableEntity::class,
+    ],
+    version = 1,
+    exportSchema = false
+)
+abstract class WinFairyDatabase : RoomDatabase() {
+    abstract fun gameRecordDao(): GameRecordDao
+    abstract fun gameVariableDao(): GameVariableDao
+}
