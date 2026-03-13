@@ -21,4 +21,11 @@ dependencyResolutionManagement {
 
 rootProject.name = "winfairy"
 include(":app")
- 
+include(":core:model")
+include(":core:domain")
+include(":core:common")
+include(":core:data")
+include(":core:database")
+include(":core:designsystem")
+include(":core:navigation")
+include(":core:ui")
