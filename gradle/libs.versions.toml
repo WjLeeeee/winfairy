@@ -9,7 +9,7 @@ lifecycleRuntimeKtx = "2.10.0"
 activityCompose = "1.13.0"
 composeBom = "2026.03.00"
 #필요한 의존성 추가
-hilt = "2.59.2"
+hilt = "2.56.2"
 hiltNavigationCompose = "1.3.0"
 room = "2.8.4"
 navigationCompose = "2.9.7"
