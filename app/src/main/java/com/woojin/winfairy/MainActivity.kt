@@ -28,9 +28,21 @@ class MainActivity : ComponentActivity() {
                     navController = navController,
                     startDestination = Onboarding
                 ) {
-                    composable<Onboarding> { OnboardingScreen() }  // feature:onboarding에서 가져옴
-                    composable<Home> { HomeScreen() }              // feature:home에서 가져옴
-                    composable<AddRecord> { AddRecordScreen() }    // feature:record에서 가져옴
+                    composable<Onboarding> {
+                        OnboardingScreen({
+                            navController.navigate(Home) {
+                                popUpTo(Onboarding) { inclusive = true }
+                            }
+                        })
+                    }  // feature:onboarding에서 가져옴
+                    composable<Home> {
+                        HomeScreen({
+                            navController.navigate(AddRecord)
+                        })
+                    }              // feature:home에서 가져옴
+                    composable<AddRecord> {
+                        AddRecordScreen()
+                    }    // feature:record에서 가져옴
                 }
             }
         }
