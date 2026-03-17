@@ -2,6 +2,8 @@ plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.compose)
+    alias(libs.plugins.hilt)
+    alias(libs.plugins.ksp)
 }
 
 android {
@@ -60,5 +62,18 @@ dependencies {
     debugImplementation(libs.androidx.compose.ui.tooling)
     debugImplementation(libs.androidx.compose.ui.test.manifest)
 
+    // Hilt
+    implementation(libs.hilt.android)
+    ksp(libs.hilt.compiler)
+
+    // Navigation
+    implementation(libs.navigation.compose)
+    implementation(libs.hilt.navigation.compose)
+
     implementation(project(":core:designsystem"))
+    implementation(project(":core:navigation"))
+    implementation(project(":core:model"))
+    implementation(project(":feature:onboarding"))
+    implementation(project(":feature:home"))
+    implementation(project(":feature:record"))
 }
