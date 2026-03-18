@@ -33,10 +33,28 @@ fun KboTeam.onPrimaryColor(): Color = when(this) {
 
 fun teamLightColorScheme(team: KboTeam): ColorScheme = lightColorScheme(
     primary = team.primaryColor(),
-    onPrimary = team.onPrimaryColor()
+    onPrimary = team.onPrimaryColor(),
+    background = Color(0xFFF3F6F3),
+    onBackground = Color(0xFF000000),
+    onSurfaceVariant = Color(0xFFB0B0B0),
 )
 
 fun teamDarkColorScheme(team: KboTeam): ColorScheme = lightColorScheme(
     primary = team.primaryColor(),
-    onPrimary = team.onPrimaryColor()
+    onPrimary = team.onPrimaryColor(),
+    background = Color(0xFFF3F6F3),
+    onBackground = Color(0xFF000000),
+    onSurfaceVariant = Color(0xFFB0B0B0),
+)
+
+fun defaultDarkColorScheme(): ColorScheme = lightColorScheme(
+    background = Color(0xFFF3F6F3),
+    onBackground = Color(0xFF000000),
+    onSurfaceVariant = Color(0xFFB0B0B0),
+)
+
+fun defaultColorScheme(): ColorScheme = lightColorScheme(
+    background = Color(0xFFF3F6F3),
+    onBackground = Color(0xFF000000),
+    onSurfaceVariant = Color(0xFFB0B0B0),
 )
