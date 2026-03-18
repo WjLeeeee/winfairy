@@ -43,7 +43,7 @@ import java.util.Locale
 
 @Composable
 fun OnboardingScreen(onComplete: (KboTeam) -> Unit) {
-    val isKoran = Locale.getDefault().language == "ko"
+    val isKorean = Locale.getDefault().language == "ko"
 
     var selectedTeam by remember { mutableStateOf(KboTeam.entries.first()) }
 
@@ -94,8 +94,8 @@ fun OnboardingScreen(onComplete: (KboTeam) -> Unit) {
                 Text(
                     text = stringResource(
                         R.string.onboarding_start_btn,
-                        if (isKoran) selectedTeam.teamName else selectedTeam.teamNameEn,
-                        if (isKoran) selectedTeam.subName else selectedTeam.subNameEn
+                        if (isKorean) selectedTeam.teamName else selectedTeam.teamNameEn,
+                        if (isKorean) selectedTeam.subName else selectedTeam.subNameEn
                     ),
                     modifier = Modifier
                         .align(Alignment.Center),
@@ -113,7 +113,7 @@ fun TeamSelectItem(
     isSelected: Boolean,
     onClick: () -> Unit,
 ) {
-    val isKoran = Locale.getDefault().language == "ko"
+    val isKorean = Locale.getDefault().language == "ko"
     Row(
         modifier = modifier
             .fillMaxWidth()
@@ -128,7 +128,7 @@ fun TeamSelectItem(
     ) {
         Image(
             painter = painterResource(id = team.logoRes()),
-            contentDescription = if (isKoran) team.teamName else team.teamNameEn,
+            contentDescription = if (isKorean) team.teamName else team.teamNameEn,
             modifier = Modifier
                 .size(40.dp)
                 .clip(CircleShape)
@@ -138,8 +138,8 @@ fun TeamSelectItem(
             modifier = Modifier,
             verticalArrangement = Arrangement.spacedBy((-4).dp)
         ) {
-            Text(text = if (isKoran) team.teamName else team.teamNameEn, color = MaterialTheme.colorScheme.onBackground)
-            Text(text = if (isKoran) team.subName else team.subNameEn, color = MaterialTheme.colorScheme.onSurfaceVariant)
+            Text(text = if (isKorean) team.teamName else team.teamNameEn, color = MaterialTheme.colorScheme.onBackground)
+            Text(text = if (isKorean) team.subName else team.subNameEn, color = MaterialTheme.colorScheme.onSurfaceVariant)
         }
         Spacer(modifier = Modifier.weight(1f))
         if (isSelected) {
