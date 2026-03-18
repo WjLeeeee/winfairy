@@ -1,4 +1,4 @@
-package com.woojin.winfairy.core.domain
+package com.woojin.winfairy.core.domain.repository
 
 import com.woojin.winfairy.core.model.KboTeam
 

@@ -1,7 +1,7 @@
 package com.woojin.winfairy.core.data.di
 
 import com.woojin.winfairy.core.data.UserTeamRepositoryImpl
-import com.woojin.winfairy.core.domain.UserTeamRepository
+import com.woojin.winfairy.core.domain.repository.UserTeamRepository
 import dagger.Binds
 import dagger.Module
 import dagger.hilt.InstallIn

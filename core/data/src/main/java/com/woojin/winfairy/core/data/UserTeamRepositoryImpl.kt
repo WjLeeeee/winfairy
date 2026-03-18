@@ -2,7 +2,7 @@ package com.woojin.winfairy.core.data
 
 import com.woojin.winfairy.core.database.dao.UserTeamDao
 import com.woojin.winfairy.core.database.entity.UserTeamEntity
-import com.woojin.winfairy.core.domain.UserTeamRepository
+import com.woojin.winfairy.core.domain.repository.UserTeamRepository
 import com.woojin.winfairy.core.model.KboTeam
 import javax.inject.Inject
 
