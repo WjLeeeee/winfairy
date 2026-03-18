@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="onboarding_title">Choose My Team</string>
+    <string name="onboarding_description">The color of the selected team will be applied to the entire app</string>
+    <string name="onboarding_start_btn">Starting with %s %s</string>
+</resources>

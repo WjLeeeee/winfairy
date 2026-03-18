@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="onboarding_title">내 팀 선택</string>
+    <string name="onboarding_description">선택한 팀의 컬러가 앱 전체에 적용돼요</string>
+    <string name="onboarding_start_btn">%s %s로 시작하기</string>
+</resources>

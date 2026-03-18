@@ -33,14 +33,18 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.woojin.winfairy.core.designsystem.theme.primaryColor
 import com.woojin.winfairy.core.model.KboTeam
 import com.woojin.winfairy.core.ui.logoRes
+import java.util.Locale
 
 @Composable
-fun OnboardingScreen(onComplete: () -> Unit) {
+fun OnboardingScreen(onComplete: (KboTeam) -> Unit) {
+    val isKoran = Locale.getDefault().language == "ko"
+
     var selectedTeam by remember { mutableStateOf(KboTeam.entries.first()) }
 
     Scaffold { innerPadding ->
@@ -52,13 +56,13 @@ fun OnboardingScreen(onComplete: () -> Unit) {
                 .padding(vertical = 40.dp, horizontal = 20.dp)
         ) {
             Text(
-                text = "내 팀 선택",
+                text = stringResource(R.string.onboarding_title),
                 color = MaterialTheme.colorScheme.onBackground,
                 fontSize = 32.sp
             )
             Spacer(modifier = Modifier.height(4.dp))
             Text(
-                text = "선택한 팀의 컬러가 앱 전체에 적용돼요",
+                text = stringResource(R.string.onboarding_description),
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
                 fontSize = 16.sp
             )
@@ -85,10 +89,14 @@ fun OnboardingScreen(onComplete: () -> Unit) {
                     .height(60.dp)
                     .clip(RoundedCornerShape(12.dp))
                     .background(selectedTeam.primaryColor())
-                    .clickable { onComplete() }
+                    .clickable { onComplete(selectedTeam) }
             ) {
                 Text(
-                    text = "${selectedTeam.teamName} ${selectedTeam.subName}로 시작하기",
+                    text = stringResource(
+                        R.string.onboarding_start_btn,
+                        if (isKoran) selectedTeam.teamName else selectedTeam.teamNameEn,
+                        if (isKoran) selectedTeam.subName else selectedTeam.subNameEn
+                    ),
                     modifier = Modifier
                         .align(Alignment.Center),
                     color = Color.White
@@ -105,6 +113,7 @@ fun TeamSelectItem(
     isSelected: Boolean,
     onClick: () -> Unit,
 ) {
+    val isKoran = Locale.getDefault().language == "ko"
     Row(
         modifier = modifier
             .fillMaxWidth()
@@ -119,7 +128,7 @@ fun TeamSelectItem(
     ) {
         Image(
             painter = painterResource(id = team.logoRes()),
-            contentDescription = team.teamName,
+            contentDescription = if (isKoran) team.teamName else team.teamNameEn,
             modifier = Modifier
                 .size(40.dp)
                 .clip(CircleShape)
@@ -129,8 +138,8 @@ fun TeamSelectItem(
             modifier = Modifier,
             verticalArrangement = Arrangement.spacedBy((-4).dp)
         ) {
-            Text(text = team.teamName, color = MaterialTheme.colorScheme.onBackground)
-            Text(text = team.subName, color = MaterialTheme.colorScheme.onSurfaceVariant)
+            Text(text = if (isKoran) team.teamName else team.teamNameEn, color = MaterialTheme.colorScheme.onBackground)
+            Text(text = if (isKoran) team.subName else team.subNameEn, color = MaterialTheme.colorScheme.onSurfaceVariant)
         }
         Spacer(modifier = Modifier.weight(1f))
         if (isSelected) {
