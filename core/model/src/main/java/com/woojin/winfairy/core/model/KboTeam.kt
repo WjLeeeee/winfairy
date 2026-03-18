@@ -10,7 +10,7 @@ enum class KboTeam(
     Kt("KT", "위즈"),
     Ssg("SSG", "랜더스"),
     Kia("KIA", "타이거즈"),
-    HanHwa("한화", "이글스"),
+    HanWha("한화", "이글스"),
     Nc("NC", "다이노스"),
     Lotte("롯데", "자이언츠"),
     Samsung("삼성", "라이온즈"),

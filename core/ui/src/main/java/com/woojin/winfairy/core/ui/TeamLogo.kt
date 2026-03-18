@@ -10,7 +10,7 @@ fun KboTeam.logoRes(): Int = when (this) {
     KboTeam.Kt -> R.drawable.logo_kt
     KboTeam.Ssg -> R.drawable.logo_ssg
     KboTeam.Kia -> R.drawable.logo_kia
-    KboTeam.HanHwa -> R.drawable.logo_hanwha
+    KboTeam.HanWha -> R.drawable.logo_hanwha
     KboTeam.Nc -> R.drawable.logo_nc
     KboTeam.Lotte -> R.drawable.logo_lotte
 }
