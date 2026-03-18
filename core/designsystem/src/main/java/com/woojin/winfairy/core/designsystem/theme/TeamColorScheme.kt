@@ -18,22 +18,10 @@ fun KboTeam.primaryColor(): Color = when (this) {
     KboTeam.Samsung -> Color(0xFF074CA1)
 }
 
-fun KboTeam.onPrimaryColor(): Color = when(this) {
-    KboTeam.DooSan -> Color(0xFFFFFFFF)
-    KboTeam.Lg -> Color(0xFF000000)
-    KboTeam.Kiwoom -> Color(0xFFD4A76A)
-    KboTeam.Kt -> Color(0xFFEB1C2D)
-    KboTeam.Ssg -> Color(0xFF000000)
-    KboTeam.Kia -> Color(0xFF000000)
-    KboTeam.HanWha -> Color(0xFF000000)
-    KboTeam.Nc -> Color(0xFFC6960B)
-    KboTeam.Lotte -> Color(0xFFD00F31)
-    KboTeam.Samsung -> Color(0xFFFFFFFF)
-}
-
 fun teamLightColorScheme(team: KboTeam): ColorScheme = lightColorScheme(
     primary = team.primaryColor(),
-    onPrimary = team.onPrimaryColor(),
+    onPrimary = Color(0xFFFFFFFF),
+    primaryContainer = team.primaryColor().copy(alpha = 0.1f),
     background = Color(0xFFF3F6F3),
     onBackground = Color(0xFF000000),
     onSurfaceVariant = Color(0xFFB0B0B0),
@@ -41,18 +29,21 @@ fun teamLightColorScheme(team: KboTeam): ColorScheme = lightColorScheme(
 
 fun teamDarkColorScheme(team: KboTeam): ColorScheme = lightColorScheme(
     primary = team.primaryColor(),
-    onPrimary = team.onPrimaryColor(),
+    onPrimary = Color(0xFFFFFFFF),
+    primaryContainer = team.primaryColor().copy(alpha = 0.1f),
     background = Color(0xFFF3F6F3),
     onBackground = Color(0xFF000000),
     onSurfaceVariant = Color(0xFFB0B0B0),
 )
 
+//최초 Onboarding 화면 에서만 사용 되는 스키마
 fun defaultDarkColorScheme(): ColorScheme = lightColorScheme(
     background = Color(0xFFF3F6F3),
     onBackground = Color(0xFF000000),
     onSurfaceVariant = Color(0xFFB0B0B0),
 )
 
+//최초 Onboarding 화면 에서만 사용 되는 스키마
 fun defaultColorScheme(): ColorScheme = lightColorScheme(
     background = Color(0xFFF3F6F3),
     onBackground = Color(0xFF000000),
