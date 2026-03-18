@@ -40,6 +40,8 @@ androidx-compose-material3 = { group = "androidx.compose.material3", name = "mat
 hilt-android = { group = "com.google.dagger", name = "hilt-android", version.ref = "hilt" }
 hilt-compiler = { group = "com.google.dagger", name = "hilt-compiler", version.ref = "hilt" }
 hilt-navigation-compose = { group = "androidx.hilt", name = "hilt-navigation-compose", version.ref = "hiltNavigationCompose" }
+# 순수 Kotlin 모듈에서 Hilt 사용을 위한 의존성
+javax-inject = { group = "javax.inject", name = "javax.inject", version = "1" }
 
 # Room
 room-runtime = { group = "androidx.room", name = "room-runtime", version.ref = "room" }
