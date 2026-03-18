@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="win_rate">승률</string>
+    <string name="win_lose_text">%s승 %s패</string>
+</resources>

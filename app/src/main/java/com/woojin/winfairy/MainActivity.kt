@@ -2,8 +2,10 @@ package com.woojin.winfairy
 
 import android.os.Bundle
 import androidx.activity.ComponentActivity
+import androidx.activity.SystemBarStyle
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -27,13 +29,27 @@ import dagger.hilt.android.AndroidEntryPoint
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        enableEdgeToEdge()
         setContent {
             val viewModel: MainViewModel = hiltViewModel()
             val selectedTeam by viewModel.selectedTeam.collectAsState()
             val isLoading by viewModel.isLoading.collectAsState()
 
             if (isLoading) return@setContent
+
+            LaunchedEffect(selectedTeam) {
+                enableEdgeToEdge(
+                    statusBarStyle = if (selectedTeam != null) {
+                        //그외 화면 - 상태바 아이콘 색상 흰색
+                        SystemBarStyle.dark(android.graphics.Color.TRANSPARENT)
+                    } else {
+                        //Onboarding 화면 - 상태바 아이콘 색상 유지 (검은색)
+                        SystemBarStyle.light(
+                            android.graphics.Color.TRANSPARENT,
+                            android.graphics.Color.TRANSPARENT
+                        )
+                    }
+                )
+            }
 
             WinFairyTheme(team = selectedTeam) {
                 val navController = rememberNavController()
@@ -48,15 +64,18 @@ class MainActivity : ComponentActivity() {
                                 popUpTo(Onboarding) { inclusive = true }
                             }
                         }
-                    }  // feature:onboarding에서 가져옴
+                    }
                     composable<Home> {
-                        HomeScreen {
-                            navController.navigate(AddRecord)
-                        }
-                    }              // feature:home에서 가져옴
+                        HomeScreen(
+                            selectedTeam = selectedTeam!!, //null 이면 Onboarding 화면 으로 이동 되기 때문에 !!처리
+                            onComplete = {
+                                navController.navigate(AddRecord)
+                            }
+                        )
+                    }
                     composable<AddRecord> {
                         AddRecordScreen()
-                    }    // feature:record에서 가져옴
+                    }
                 }
             }
         }
