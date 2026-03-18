@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="win_rate">승률</string>
-    <string name="win_lose_text">%s승 %s패</string>
+    <string name="win_lose_text">%s승 %s무 %s패</string>
+    <string name="last_five_games">최근 5경기</string>
 </resources>

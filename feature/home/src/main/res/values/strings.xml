@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="win_rate">winning rate</string>
-    <string name="win_lose_text">%swins %slosses</string>
+    <string name="win_lose_text">%swins %sdraws %slosses</string>
+    <string name="last_five_games">the last five games</string>
 </resources>
