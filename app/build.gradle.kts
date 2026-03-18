@@ -73,6 +73,8 @@ dependencies {
     implementation(project(":core:designsystem"))
     implementation(project(":core:navigation"))
     implementation(project(":core:model"))
+    implementation(project(":core:domain"))
+    implementation(project(":core:data")) //직접 사용 X, Hilt 사용으로 인해 RepositoryModule 알기만 함.
     implementation(project(":feature:onboarding"))
     implementation(project(":feature:home"))
     implementation(project(":feature:record"))

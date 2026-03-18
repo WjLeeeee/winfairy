@@ -4,10 +4,12 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
@@ -27,17 +29,21 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContent {
-            var selectedTeam by remember { mutableStateOf<KboTeam?>(null) }
+            val viewModel: MainViewModel = hiltViewModel()
+            val selectedTeam by viewModel.selectedTeam.collectAsState()
+            val isLoading by viewModel.isLoading.collectAsState()
+
+            if (isLoading) return@setContent
 
             WinFairyTheme(team = selectedTeam) {
                 val navController = rememberNavController()
                 NavHost(
                     navController = navController,
-                    startDestination = Onboarding
+                    startDestination = if (selectedTeam == null) Onboarding else Home
                 ) {
                     composable<Onboarding> {
                         OnboardingScreen { selectedKboTeam ->
-                            selectedTeam = selectedKboTeam
+                            viewModel.setTeam(selectedKboTeam)
                             navController.navigate(Home) {
                                 popUpTo(Onboarding) { inclusive = true }
                             }
