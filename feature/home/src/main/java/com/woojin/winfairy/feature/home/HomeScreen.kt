@@ -209,19 +209,19 @@ fun RecentGameResultBadge(gameRecord: GameRecord) {
         GameResult.WIN -> MaterialTheme.colorScheme.primary
         GameResult.LOSE -> Color(0xFF888888)
         GameResult.DRAW -> Color(0xFFCCCCCC)
-        else -> Color.White
+        GameResult.CANCELED -> Color(0xFFCCCCCC)
     }
     val text = when(gameRecord.result) {
         GameResult.WIN -> "W"
         GameResult.LOSE -> "L"
         GameResult.DRAW -> "D"
-        else -> ""
+        GameResult.CANCELED -> "C"
     }
     val textColor = when(gameRecord.result) {
         GameResult.WIN -> MaterialTheme.colorScheme.primary
         GameResult.LOSE -> Color(0xFF888888)
         GameResult.DRAW -> Color(0xFFCCCCCC)
-        else -> Color.White
+        GameResult.CANCELED -> Color(0xFFCCCCCC)
     }
     Box(
         modifier = Modifier
