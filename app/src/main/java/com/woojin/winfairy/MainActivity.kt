@@ -14,6 +14,7 @@ import androidx.compose.runtime.setValue
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.woojin.winfairy.core.designsystem.theme.WinFairyTheme
 import com.woojin.winfairy.core.model.KboTeam
@@ -36,23 +37,25 @@ class MainActivity : ComponentActivity() {
 
             if (isLoading) return@setContent
 
-            LaunchedEffect(selectedTeam) {
+            val navController = rememberNavController()
+            val navBackStackEntry by navController.currentBackStackEntryAsState()
+            val currentRoute = navBackStackEntry?.destination?.route
+
+            LaunchedEffect(currentRoute) {
                 enableEdgeToEdge(
-                    statusBarStyle = if (selectedTeam != null) {
-                        //그외 화면 - 상태바 아이콘 색상 흰색
-                        SystemBarStyle.dark(android.graphics.Color.TRANSPARENT)
-                    } else {
-                        //Onboarding 화면 - 상태바 아이콘 색상 유지 (검은색)
-                        SystemBarStyle.light(
-                            android.graphics.Color.TRANSPARENT,
-                            android.graphics.Color.TRANSPARENT
-                        )
+                    statusBarStyle = when (currentRoute) {
+                        Onboarding::class.qualifiedName, AddRecord::class.qualifiedName -> {
+                            SystemBarStyle.light(
+                                android.graphics.Color.TRANSPARENT,
+                                android.graphics.Color.TRANSPARENT
+                            )
+                        }
+                        else -> SystemBarStyle.dark(android.graphics.Color.TRANSPARENT)
                     }
                 )
             }
 
             WinFairyTheme(team = selectedTeam) {
-                val navController = rememberNavController()
                 NavHost(
                     navController = navController,
                     startDestination = if (selectedTeam == null) Onboarding else Home
@@ -74,7 +77,12 @@ class MainActivity : ComponentActivity() {
                         )
                     }
                     composable<AddRecord> {
-                        AddRecordScreen()
+                        AddRecordScreen(
+                            selectedTeam = selectedTeam!!,
+                            onComplete = {
+                                navController.popBackStack()
+                            }
+                        )
                     }
                 }
             }
