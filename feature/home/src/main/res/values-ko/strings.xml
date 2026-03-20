@@ -7,7 +7,7 @@
     <string name="analysis">분석</string>
     <string name="achievement">업적</string>
     <string name="add_records">+ 직관 기록 추가</string>
-    <string name="no_records">직관 기록이 없어요 기록을 추가해보세요!</string>
+    <string name="no_records">직관 기록이 없어요\n기록을 추가해보세요!</string>
     <string name="win">승리</string>
     <string name="lose">패배</string>
     <string name="draw">무승부</string>
