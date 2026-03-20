@@ -8,16 +8,12 @@ import androidx.activity.enableEdgeToEdge
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.woojin.winfairy.core.designsystem.theme.WinFairyTheme
-import com.woojin.winfairy.core.model.KboTeam
 import com.woojin.winfairy.core.navigation.AddRecord
 import com.woojin.winfairy.core.navigation.Home
 import com.woojin.winfairy.core.navigation.Onboarding

@@ -29,6 +29,7 @@ android {
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_11
         targetCompatibility = JavaVersion.VERSION_11
+        isCoreLibraryDesugaringEnabled = true
     }
 }
 
@@ -69,4 +70,7 @@ dependencies {
     // Lifecycle
     implementation(libs.lifecycle.viewmodel.compose)
     implementation(libs.lifecycle.runtime.compose)
+
+    //java.time 사용을 위해
+    coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:2.1.4")
 }

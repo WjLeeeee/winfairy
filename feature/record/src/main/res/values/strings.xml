@@ -1,4 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="add_intuitive_records">Add Intuitive Records</string>
+    <string name="date">date</string>
+    <string name="ok">ok</string>
+    <string name="cancel">cancel</string>
 </resources>

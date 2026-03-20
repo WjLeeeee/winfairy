@@ -32,6 +32,7 @@ android {
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_11
         targetCompatibility = JavaVersion.VERSION_11
+        isCoreLibraryDesugaringEnabled = true
     }
     buildFeatures {
         compose = true
@@ -69,6 +70,9 @@ dependencies {
     // Navigation
     implementation(libs.navigation.compose)
     implementation(libs.hilt.navigation.compose)
+
+    //java.time 사용을 위해
+    coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:2.1.4")
 
     implementation(project(":core:designsystem"))
     implementation(project(":core:navigation"))

@@ -1,4 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="add_intuitive_records">직관 기록 추가</string>
+    <string name="date">날짜</string>
+    <string name="ok">확인</string>
+    <string name="cancel">취소</string>
 </resources>
