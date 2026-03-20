@@ -88,6 +88,7 @@ fun HomeScreen(
                     .fillMaxSize()
                     .background(MaterialTheme.colorScheme.background)
                     .padding(horizontal = 25.dp)
+                    .padding(top = if (allRecord.isEmpty()) 20.dp else 0.dp)
             ) {
                 HomeMainTab(
                     selectedTab = selectedTab,
