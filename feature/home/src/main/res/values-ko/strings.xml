@@ -3,4 +3,13 @@
     <string name="win_rate">승률</string>
     <string name="win_lose_text">%s승 %s무 %s패</string>
     <string name="last_five_games">최근 5경기</string>
+    <string name="record">기록</string>
+    <string name="analysis">분석</string>
+    <string name="achievement">업적</string>
+    <string name="add_records">+ 직관 기록 추가</string>
+    <string name="no_records">직관 기록이 없어요 기록을 추가해보세요!</string>
+    <string name="win">승리</string>
+    <string name="lose">패배</string>
+    <string name="draw">무승부</string>
+    <string name="cancel">취소</string>
 </resources>

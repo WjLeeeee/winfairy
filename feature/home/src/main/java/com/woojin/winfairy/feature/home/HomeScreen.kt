@@ -3,22 +3,32 @@ package com.woojin.winfairy.feature.home
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SecondaryTabRow
+import androidx.compose.material3.Tab
+import androidx.compose.material3.TabRow
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -45,6 +55,8 @@ fun HomeScreen(
     val allRecord by homeViewModel.allRecord.collectAsState()
     val winRate by homeViewModel.winRate.collectAsState()
     val tier by homeViewModel.tier.collectAsState()
+
+    var selectedTab by remember { mutableIntStateOf(0) }
     Scaffold(
         containerColor = MaterialTheme.colorScheme.primary
     ) { innerPadding ->
@@ -59,22 +71,48 @@ fun HomeScreen(
                 winRate = winRate,
                 tier = tier,
             )
-            Box(
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .background(MaterialTheme.colorScheme.background)
+                    .padding(horizontal = 20.dp)
+                    .offset(y = -(18).dp),
+                horizontalArrangement = Arrangement.spacedBy(6.dp)
+            ) {
+                allRecord.take(5).forEach { gameRecord ->
+                    RecentGameResultBadge(gameRecord = gameRecord)
+                }
+            }
+            Column(
                 modifier = Modifier
                     .fillMaxSize()
                     .background(MaterialTheme.colorScheme.background)
+                    .padding(horizontal = 25.dp)
             ) {
-                Row(
-                    modifier = Modifier
-                        .padding(horizontal = 20.dp)
-                        .align(Alignment.TopStart)
-                        .offset(y = -(18).dp),
-                    horizontalArrangement = Arrangement.spacedBy(6.dp)
-                ) {
-                    allRecord.take(5).forEach { gameRecord ->
-                        RecentGameResultBadge(gameRecord = gameRecord)
-                    }
+                HomeMainTab(
+                    selectedTab = selectedTab,
+                    onTabClick = { index -> selectedTab = index }
+                )
+                Spacer(modifier = Modifier.height(12.dp))
+                when (selectedTab) {
+                    0 -> RecordItem(modifier = Modifier.weight(1f), recordItem = allRecord)
+                    1 -> AnalysisItem(modifier = Modifier.weight(1f), recordItem = allRecord)
+                    2 -> AchievementItem(modifier = Modifier.weight(1f), recordItem = allRecord)
                 }
+                Spacer(modifier = Modifier.height(20.dp))
+                Text(
+                    text = stringResource(R.string.add_records),
+                    fontSize = 16.sp,
+                    color = MaterialTheme.colorScheme.onPrimary,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .clip(RoundedCornerShape(8.dp))
+                        .background(MaterialTheme.colorScheme.primary)
+                        .clickable { onComplete() }
+                        .padding(vertical = 12.dp),
+                    textAlign = TextAlign.Center
+                )
+                Spacer(modifier = Modifier.height(20.dp))
             }
         }
     }
@@ -203,4 +241,42 @@ fun RecentGameResultBadge(gameRecord: GameRecord) {
             fontSize = 12.sp
         )
     }
+}
+
+@Composable
+fun HomeMainTab(
+    selectedTab: Int,
+    onTabClick: (Int) -> Unit,
+) {
+    val tabs = listOf(stringResource(R.string.record), stringResource(R.string.analysis), stringResource(R.string.achievement))
+    SecondaryTabRow(
+        modifier = Modifier
+            .fillMaxWidth()
+            .background(MaterialTheme.colorScheme.background)
+            .clip(RoundedCornerShape(10.dp)),
+        selectedTabIndex = selectedTab,
+        containerColor = Color.White,
+        contentColor = MaterialTheme.colorScheme.primary,
+        indicator = {},   // 기본 인디케이터 제거
+        divider = {},     // 하단 구분선 제거
+        tabs = {
+            tabs.forEachIndexed { index, title ->
+                Tab(
+                    selected = selectedTab == index,
+                    onClick = { onTabClick(index) },
+                    modifier = Modifier
+                        .background(
+                            if (selectedTab == index) MaterialTheme.colorScheme.primary
+                            else Color.White
+                        ),
+                    text = {
+                        Text(
+                            text = title,
+                            color = if (selectedTab == index) Color.White else MaterialTheme.colorScheme.onSurfaceVariant,
+                            fontSize = 14.sp,
+                        )
+                    }
+                )
+            }
+        })
 }
