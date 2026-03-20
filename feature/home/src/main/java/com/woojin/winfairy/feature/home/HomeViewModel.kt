@@ -91,9 +91,9 @@ class HomeViewModel @Inject constructor(
     init {
         viewModelScope.launch {
             val records = getAllRecord()
-            _allRecord.value = tempRecord
-            _winRate.value = getWinRate(tempRecord)
-            _tier.value = getTier(_winRate.value, tempRecord.isEmpty())
+            _allRecord.value = records
+            _winRate.value = getWinRate(records)
+            _tier.value = getTier(_winRate.value, records.isEmpty())
         }
     }
 }
