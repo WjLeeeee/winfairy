@@ -3,6 +3,7 @@ package com.woojin.winfairy.feature.record
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
@@ -10,15 +11,20 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBackIos
+import androidx.compose.material.icons.filled.Approval
+import androidx.compose.material.icons.filled.ArrowDropDown
 import androidx.compose.material.icons.filled.DateRange
 import androidx.compose.material3.DatePicker
 import androidx.compose.material3.DatePickerDialog
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
@@ -35,6 +41,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.woojin.winfairy.core.model.KboTeam
@@ -49,7 +56,9 @@ fun AddRecordScreen(
     onComplete: () -> Unit,
     selectedTeam: KboTeam,
 ) {
+    val isKorean = Locale.getDefault().language == "ko"
     var selectedEnemy by remember { mutableStateOf<KboTeam?>(null) }
+    var selectedStadium by remember { mutableStateOf(if (isKorean) selectedTeam.stadium else selectedTeam.stadiumEn) }
     Scaffold(
         modifier = Modifier.fillMaxSize()
     ) { innerPadding ->
@@ -76,6 +85,15 @@ fun AddRecordScreen(
                     myTeam = selectedTeam,
                     selectedEnemyTeam = selectedEnemy,
                     onSelected = { selectedEnemyTeam -> selectedEnemy = selectedEnemyTeam }
+                )
+            }
+            AddRecordBase(
+                baseTitle = R.string.stadium
+            ) {
+                Stadium(
+                    myTeamStadium = if (isKorean) selectedTeam.stadium else selectedTeam.stadiumEn,
+                    selectedStadium = selectedStadium,
+                    onSelect = { selectedStadium = it }
                 )
             }
         }
@@ -232,5 +250,77 @@ fun EnemyTeam(
                         .padding(horizontal = 14.dp, vertical = 8.dp)
                 )
             }
+    }
+}
+
+@Composable
+fun Stadium(
+    myTeamStadium: String,
+    selectedStadium: String,
+    onSelect: (String) -> Unit,
+) {
+    val isKorean = Locale.getDefault().language == "ko"
+    var expanded by remember { mutableStateOf(false) }
+    val stadiums = KboTeam.entries
+        .sortedBy { if (isKorean) it.stadium != myTeamStadium else it.stadiumEn != myTeamStadium }
+        .map { if (isKorean) it.stadium else it.stadiumEn
+    }
+
+    Box(modifier = Modifier.fillMaxWidth()) {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .clip(RoundedCornerShape(10.dp))
+                .background(Color.White)
+                .clickable { expanded = true }
+                .padding(12.dp, 16.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Icon(
+                imageVector = Icons.Default.Approval,
+                contentDescription = null,
+                tint = Color(0xFF999999),
+                modifier = Modifier.size(18.dp)
+            )
+            Spacer(modifier = Modifier.width(10.dp))
+            Text(
+                text = selectedStadium,
+                fontSize = 14.sp,
+                color = MaterialTheme.colorScheme.onBackground
+            )
+            Spacer(modifier = Modifier.weight(1f))
+            Icon(
+                imageVector = Icons.Default.ArrowDropDown,
+                contentDescription = null,
+                tint = Color(0xFF999999),
+                modifier = Modifier.size(18.dp)
+            )
+        }
+        DropdownMenu(
+            expanded = expanded,
+            onDismissRequest = { expanded = false },
+            offset = DpOffset(0.dp, 4.dp),
+            modifier = Modifier
+                .fillMaxWidth(0.9f)
+                .heightIn(max = 250.dp)
+                .background(Color.White)
+        ) {
+            stadiums.forEach { stadium ->
+                DropdownMenuItem(
+                    text = {
+                        Text(
+                            text = stadium,
+                            fontSize = 14.sp,
+                            color = if (stadium == selectedStadium) MaterialTheme.colorScheme.primary
+                            else MaterialTheme.colorScheme.onBackground
+                        )
+                    },
+                    onClick = {
+                        onSelect(stadium)
+                        expanded = false
+                    }
+                )
+            }
+        }
     }
 }
