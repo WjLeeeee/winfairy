@@ -6,4 +6,8 @@
     <string name="cancel">cancel</string>
     <string name="enemy_team">enemy team</string>
     <string name="stadium">stadium</string>
+    <string name="game_result">game result</string>
+    <string name="win">승리</string>
+    <string name="lose">패배</string>
+    <string name="draw">무승부</string>
 </resources>

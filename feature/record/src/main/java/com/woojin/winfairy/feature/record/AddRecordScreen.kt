@@ -1,6 +1,7 @@
 package com.woojin.winfairy.feature.record
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -15,12 +16,17 @@ import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBackIos
 import androidx.compose.material.icons.filled.Approval
 import androidx.compose.material.icons.filled.ArrowDropDown
+import androidx.compose.material.icons.filled.Check
+import androidx.compose.material.icons.filled.Clear
+import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.DateRange
+import androidx.compose.material.icons.filled.Remove
 import androidx.compose.material3.DatePicker
 import androidx.compose.material3.DatePickerDialog
 import androidx.compose.material3.DropdownMenu
@@ -44,6 +50,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.woojin.winfairy.core.model.GameResult
 import com.woojin.winfairy.core.model.KboTeam
 import java.time.LocalDate
 import java.time.ZoneOffset
@@ -60,6 +67,7 @@ fun AddRecordScreen(
     var selectedDate by remember { mutableStateOf(LocalDate.now().toString()) }
     var selectedEnemy by remember { mutableStateOf<KboTeam?>(null) }
     var selectedStadium by remember { mutableStateOf(if (isKorean) selectedTeam.stadium else selectedTeam.stadiumEn) }
+    var gameResult by remember { mutableStateOf(GameResult.WIN) }
     Scaffold(
         modifier = Modifier.fillMaxSize()
     ) { innerPadding ->
@@ -98,6 +106,14 @@ fun AddRecordScreen(
                     myTeamStadium = if (isKorean) selectedTeam.stadium else selectedTeam.stadiumEn,
                     selectedStadium = selectedStadium,
                     onSelect = { selectedStadium = it }
+                )
+            }
+            AddRecordBase(
+                baseTitle = R.string.game_result
+            ) {
+                GameResultSelector(
+                    resultState = gameResult,
+                    onSelect = { gameResult = it }
                 )
             }
         }
@@ -326,6 +342,70 @@ fun Stadium(
                         onSelect(stadium)
                         expanded = false
                     }
+                )
+            }
+        }
+    }
+}
+
+@Composable
+fun GameResultSelector(
+    resultState: GameResult,
+    onSelect: (GameResult) -> Unit,
+) {
+    Row(
+        modifier = Modifier.fillMaxWidth(),
+        horizontalArrangement = Arrangement.spacedBy(8.dp)
+    ) {
+        GameResult.entries.forEach { result ->
+            val isSelected = result == resultState
+            val label = when (result) {
+                GameResult.WIN -> stringResource(R.string.win)
+                GameResult.LOSE -> stringResource(R.string.lose)
+                GameResult.DRAW -> stringResource(R.string.draw)
+                GameResult.CANCELED -> stringResource(R.string.cancel)
+            }
+            val icon = when (result) {
+                GameResult.WIN -> Icons.Default.Check
+                GameResult.LOSE -> Icons.Default.Close
+                GameResult.DRAW -> Icons.Default.Remove
+                GameResult.CANCELED -> Icons.Default.Clear
+            }
+
+            Column(
+                modifier = Modifier
+                    .weight(1f)
+                    .clip(RoundedCornerShape(10.dp))
+                    .background(
+                        if (isSelected) MaterialTheme.colorScheme.primary
+                        else Color.White
+                    )
+                    .clickable { onSelect(result) }
+                    .padding(vertical = 20.dp),
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                Box(
+                    modifier = Modifier
+                        .size(20.dp)
+                        .border(
+                            width = 1.dp,
+                            color = if (isSelected) Color.White else Color(0xFF888888),
+                            shape = CircleShape
+                        ),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Icon(
+                        imageVector = icon,
+                        contentDescription = label,
+                        tint = if (isSelected) Color.White else Color(0xFF888888),
+                        modifier = Modifier.size(12.dp)
+                    )
+                }
+                Spacer(modifier = Modifier.height(4.dp))
+                Text(
+                    text = label,
+                    fontSize = 12.sp,
+                    color = if (isSelected) Color.White else Color(0xFF888888)
                 )
             }
         }

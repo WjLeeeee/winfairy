@@ -6,4 +6,8 @@
     <string name="cancel">취소</string>
     <string name="enemy_team">상대 팀</string>
     <string name="stadium">구장</string>
+    <string name="game_result">경기 결과</string>
+    <string name="win">win</string>
+    <string name="lose">lose</string>
+    <string name="draw">draw</string>
 </resources>
