@@ -57,6 +57,7 @@ fun AddRecordScreen(
     selectedTeam: KboTeam,
 ) {
     val isKorean = Locale.getDefault().language == "ko"
+    var selectedDate by remember { mutableStateOf(LocalDate.now().toString()) }
     var selectedEnemy by remember { mutableStateOf<KboTeam?>(null) }
     var selectedStadium by remember { mutableStateOf(if (isKorean) selectedTeam.stadium else selectedTeam.stadiumEn) }
     Scaffold(
@@ -76,7 +77,10 @@ fun AddRecordScreen(
             AddRecordBase(
                 baseTitle = R.string.date
             ) {
-                DateLayout()
+                DateLayout(
+                    selectedDate = selectedDate,
+                    onDateSelected = { selectedDate = it }
+                )
             }
             AddRecordBase(
                 baseTitle = R.string.enemy_team
@@ -155,10 +159,12 @@ fun AddRecordBase(
 
 @OptIn(ExperimentalTime::class)
 @Composable
-fun DateLayout() {
+fun DateLayout(
+    selectedDate: String,
+    onDateSelected: (String) -> Unit,
+) {
     var showDatePicker by remember { mutableStateOf(false) }
-    var selectedDate by remember { mutableStateOf(LocalDate.now()) }
-
+    val date = LocalDate.parse(selectedDate)
     val formatter = DateTimeFormatter.ofPattern("yyyy년 M월 d일 (E)", Locale.KOREAN)
 
     Row(
@@ -178,7 +184,7 @@ fun DateLayout() {
         )
         Spacer(modifier = Modifier.width(10.dp))
         Text(
-            text = selectedDate.format(formatter),
+            text = date.format(formatter),
             fontSize = 14.sp,
             color = MaterialTheme.colorScheme.onBackground
         )
@@ -186,7 +192,7 @@ fun DateLayout() {
 
     if (showDatePicker) {
         val datePickerState = rememberDatePickerState(
-            initialSelectedDateMillis = selectedDate
+            initialSelectedDateMillis = date
                 .atStartOfDay(ZoneOffset.UTC)
                 .toInstant()
                 .toEpochMilli()
@@ -197,7 +203,8 @@ fun DateLayout() {
                 TextButton(
                     onClick = {
                         datePickerState.selectedDateMillis?.let { millis ->
-                            selectedDate = LocalDate.ofEpochDay(millis / 86400000)
+                            val newDate = LocalDate.ofEpochDay(millis / 86400000)
+                            onDateSelected(newDate.toString()) // "2026-03-23" 형식
                         }
                         showDatePicker = false
                     }
