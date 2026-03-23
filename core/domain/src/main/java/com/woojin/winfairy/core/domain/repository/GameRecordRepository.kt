@@ -10,4 +10,5 @@ interface GameRecordRepository {
     suspend fun getRecordById(id: Long): GameRecord? //기록 수정 에서 사용
     suspend fun getVariablesByRecordId(recordId: Long): List<GameVariable> //기록 수정 에서 사용
     suspend fun updateRecord(record: GameRecord, variables: List<GameVariable>) //기록 수정 에서 사용
+    suspend fun deleteRecord(recordId: Long) //기록 삭제
 }

@@ -2,6 +2,7 @@ package com.woojin.winfairy.feature.home
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.woojin.winfairy.core.domain.usecase.DeleteGameRecordUseCase
 import com.woojin.winfairy.core.domain.usecase.GetAllRecordUseCase
 import com.woojin.winfairy.core.domain.usecase.GetTierUseCase
 import com.woojin.winfairy.core.domain.usecase.GetWinRateUseCase
@@ -19,6 +20,7 @@ class HomeViewModel @Inject constructor(
     private val getAllRecord: GetAllRecordUseCase,
     private val getWinRate: GetWinRateUseCase,
     private val getTier: GetTierUseCase,
+    private val deleteGameRecord: DeleteGameRecordUseCase,
 ) : ViewModel() {
     private val _allRecord = MutableStateFlow<List<GameRecord>>(emptyList())
     val allRecord = _allRecord.asStateFlow()
@@ -95,6 +97,12 @@ class HomeViewModel @Inject constructor(
                 _winRate.value = getWinRate(records)
                 _tier.value = getTier(_winRate.value, records.isEmpty())
             }
+        }
+    }
+
+    fun deleteRecord(recordId: Long) {
+        viewModelScope.launch {
+            deleteGameRecord(recordId)
         }
     }
 }

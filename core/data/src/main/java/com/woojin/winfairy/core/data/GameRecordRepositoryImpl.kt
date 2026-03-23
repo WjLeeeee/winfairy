@@ -1,5 +1,6 @@
 package com.woojin.winfairy.core.data
 
+import androidx.lifecycle.liveData
 import com.woojin.winfairy.core.data.mapper.toDomain
 import com.woojin.winfairy.core.data.mapper.toEntity
 import com.woojin.winfairy.core.database.dao.GameRecordDao
@@ -48,5 +49,11 @@ class GameRecordRepositoryImpl @Inject constructor(
                 variables.map { it.toEntity(gameRecordId = record.id) }
             )
         }
+    }
+
+    override suspend fun deleteRecord(recordId: Long) {
+        val deleteRecordById = gameRecordDao.getRecordById(recordId) ?: return
+        gameVariableDao.deleteVariablesByRecordId(recordId)
+        gameRecordDao.deleteRecord(deleteRecordById)
     }
 }

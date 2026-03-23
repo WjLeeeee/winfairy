@@ -97,7 +97,12 @@ fun HomeScreen(
                 )
                 Spacer(modifier = Modifier.height(12.dp))
                 when (selectedTab) {
-                    0 -> RecordItem(modifier = Modifier.weight(1f), recordItem = allRecord, onItemClick = { recordId -> onEditRecord(recordId) })
+                    0 -> RecordItem(
+                        modifier = Modifier.weight(1f),
+                        recordItem = allRecord,
+                        onItemClick = { recordId -> onEditRecord(recordId) },
+                        onDelete = { recordId -> homeViewModel.deleteRecord(recordId) }
+                    )
                     1 -> AnalysisItem(modifier = Modifier.weight(1f), recordItem = allRecord)
                     2 -> AchievementItem(modifier = Modifier.weight(1f), recordItem = allRecord)
                 }
