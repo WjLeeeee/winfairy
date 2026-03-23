@@ -10,3 +10,6 @@ data object Home
 
 @Serializable
 data object AddRecord
+
+@Serializable
+data class EditRecord(val recordId: Long)

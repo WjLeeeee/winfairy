@@ -75,6 +75,7 @@ import kotlin.time.ExperimentalTime
 fun AddRecordScreen(
     onComplete: () -> Unit,
     selectedTeam: KboTeam,
+    recordId: Long? = null, // 수정 에서만 사용
     viewModel: AddRecordViewModel = hiltViewModel()
 ) {
     val context = LocalContext.current
@@ -84,10 +85,14 @@ fun AddRecordScreen(
     val recordData by viewModel.recordData.collectAsState()
 
     LaunchedEffect(Unit) {
-        viewModel.initVariables(isKorean)
-        viewModel.updateRecordData(
-            stadium = if (isKorean) selectedTeam.stadium else selectedTeam.stadiumEn
-        )
+        if (recordId != null) {
+            viewModel.loadRecord(recordId, isKorean)
+        } else {
+            viewModel.initVariables(isKorean)
+            viewModel.updateRecordData(
+                stadium = if (isKorean) selectedTeam.stadium else selectedTeam.stadiumEn
+            )
+        }
     }
 
     Scaffold(
@@ -104,7 +109,8 @@ fun AddRecordScreen(
             verticalArrangement = Arrangement.spacedBy(12.dp)
         ) {
             TopLayout(
-                onBackClick = { onComplete() }
+                onBackClick = { onComplete() },
+                title = if (recordId == null) R.string.add_intuitive_records else R.string.modify_intuitive_records
             )
             AddRecordBase(
                 baseTitle = R.string.date
@@ -177,7 +183,8 @@ fun AddRecordScreen(
 
 @Composable
 fun TopLayout(
-    onBackClick: () -> Unit
+    onBackClick: () -> Unit,
+    title: Int,
 ) {
     Row(
         modifier = Modifier
@@ -194,7 +201,7 @@ fun TopLayout(
         )
         Spacer(modifier = Modifier.width(20.dp))
         Text(
-            text = stringResource(R.string.add_intuitive_records),
+            text = stringResource(title),
             fontSize = 24.sp,
             color = MaterialTheme.colorScheme.onBackground,
         )

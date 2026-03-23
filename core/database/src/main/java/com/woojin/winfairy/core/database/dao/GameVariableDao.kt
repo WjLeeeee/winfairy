@@ -4,13 +4,12 @@ import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.Query
 import com.woojin.winfairy.core.database.entity.GameVariableEntity
-import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface GameVariableDao {
 
     @Query("SELECT * FROM game_variable WHERE gameRecordId = :gameRecordId")
-    fun getVariablesByRecordId(gameRecordId: Long): Flow<List<GameVariableEntity>>
+    suspend fun getVariablesByRecordId(gameRecordId: Long): List<GameVariableEntity>
 
     @Insert
     suspend fun insertVariables(variables: List<GameVariableEntity>)

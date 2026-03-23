@@ -1,6 +1,7 @@
 package com.woojin.winfairy.feature.home
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -30,7 +31,8 @@ import com.woojin.winfairy.core.model.GameResult
 @Composable
 fun RecordItem(
     modifier: Modifier = Modifier,
-    recordItem: List<GameRecord>
+    recordItem: List<GameRecord>,
+    onItemClick: (Long) -> Unit,
 ) {
     if (recordItem.isEmpty()) {
         Box(
@@ -78,6 +80,7 @@ fun RecordItem(
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
+                        .clickable { onItemClick(record.id) }
                         .padding(horizontal = 12.dp, vertical = 16.dp),
                     verticalAlignment = Alignment.CenterVertically
                 ) {

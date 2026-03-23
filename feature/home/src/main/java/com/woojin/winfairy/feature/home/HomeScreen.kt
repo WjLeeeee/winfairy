@@ -49,6 +49,7 @@ import java.util.Locale
 @Composable
 fun HomeScreen(
     onComplete: () -> Unit,
+    onEditRecord: (Long) -> Unit,
     selectedTeam: KboTeam,
     homeViewModel: HomeViewModel = hiltViewModel()
 ) {
@@ -96,7 +97,7 @@ fun HomeScreen(
                 )
                 Spacer(modifier = Modifier.height(12.dp))
                 when (selectedTab) {
-                    0 -> RecordItem(modifier = Modifier.weight(1f), recordItem = allRecord)
+                    0 -> RecordItem(modifier = Modifier.weight(1f), recordItem = allRecord, onItemClick = { recordId -> onEditRecord(recordId) })
                     1 -> AnalysisItem(modifier = Modifier.weight(1f), recordItem = allRecord)
                     2 -> AchievementItem(modifier = Modifier.weight(1f), recordItem = allRecord)
                 }

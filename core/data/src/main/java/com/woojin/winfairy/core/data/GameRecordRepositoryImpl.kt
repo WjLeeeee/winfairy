@@ -29,4 +29,24 @@ class GameRecordRepositoryImpl @Inject constructor(
             )
         }
     }
+
+    override suspend fun getRecordById(id: Long): GameRecord? {
+        return gameRecordDao.getRecordById(id)?.toDomain()
+    }
+
+    override suspend fun getVariablesByRecordId(recordId: Long): List<GameVariable> {
+        return gameVariableDao.getVariablesByRecordId(recordId).map {
+            GameVariable(category = it.category, value = it.value)
+        }
+    }
+
+    override suspend fun updateRecord(record: GameRecord, variables: List<GameVariable>) {
+        gameRecordDao.updateRecord(record.toEntity())
+        gameVariableDao.deleteVariablesByRecordId(record.id)
+        if (variables.isNotEmpty()) {
+            gameVariableDao.insertVariables(
+                variables.map { it.toEntity(gameRecordId = record.id) }
+            )
+        }
+    }
 }

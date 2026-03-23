@@ -13,8 +13,10 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
+import androidx.navigation.toRoute
 import com.woojin.winfairy.core.designsystem.theme.WinFairyTheme
 import com.woojin.winfairy.core.navigation.AddRecord
+import com.woojin.winfairy.core.navigation.EditRecord
 import com.woojin.winfairy.core.navigation.Home
 import com.woojin.winfairy.core.navigation.Onboarding
 import com.woojin.winfairy.feature.home.HomeScreen
@@ -69,6 +71,9 @@ class MainActivity : ComponentActivity() {
                             selectedTeam = selectedTeam!!, //null 이면 Onboarding 화면 으로 이동 되기 때문에 !!처리
                             onComplete = {
                                 navController.navigate(AddRecord)
+                            },
+                            onEditRecord = { recordId ->
+                                navController.navigate(EditRecord(recordId))
                             }
                         )
                     }
@@ -78,6 +83,14 @@ class MainActivity : ComponentActivity() {
                             onComplete = {
                                 navController.popBackStack()
                             }
+                        )
+                    }
+                    composable<EditRecord> { backStackEntry ->
+                        val editRecord = backStackEntry.toRoute<EditRecord>()
+                        AddRecordScreen(
+                            selectedTeam = selectedTeam!!,
+                            recordId = editRecord.recordId,
+                            onComplete = { navController.popBackStack() }
                         )
                     }
                 }

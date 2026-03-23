@@ -15,4 +15,5 @@
     <string name="save_record">save record</string>
     <string name="choose_enemy_team">choose enemy team</string>
     <string name="input_variable_text_field">input %s</string>
+    <string name="modify_intuitive_records">Modify Intuitive Records</string>
 </resources>

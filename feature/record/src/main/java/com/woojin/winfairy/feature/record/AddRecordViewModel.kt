@@ -3,6 +3,9 @@ package com.woojin.winfairy.feature.record
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.woojin.winfairy.core.domain.usecase.AddGameRecordUseCase
+import com.woojin.winfairy.core.domain.usecase.GetRecordByIdUseCase
+import com.woojin.winfairy.core.domain.usecase.GetVariablesByRecordIdUseCase
+import com.woojin.winfairy.core.domain.usecase.UpdateGameRecordUseCase
 import com.woojin.winfairy.core.model.GameRecord
 import com.woojin.winfairy.core.model.GameResult
 import com.woojin.winfairy.core.model.GameVariable
@@ -18,11 +21,44 @@ import javax.inject.Inject
 
 @HiltViewModel
 class AddRecordViewModel @Inject constructor(
-    private val addGameRecordUseCase: AddGameRecordUseCase
+    private val addGameRecordUseCase: AddGameRecordUseCase,
+    private val updateGameRecordUseCase: UpdateGameRecordUseCase,
+    private val getRecordByIdUseCase: GetRecordByIdUseCase,
+    private val getVariablesByRecordIdUseCase: GetVariablesByRecordIdUseCase,
 ) : ViewModel() {
 
     private val _recordData = MutableStateFlow(RecordData())
     val recordData: StateFlow<RecordData> = _recordData.asStateFlow()
+
+    private var isEditMode = false
+    private var editRecordId: Long = 0
+
+    fun loadRecord(recordId: Long, isKorean: Boolean) {
+        viewModelScope.launch {
+            val record = getRecordByIdUseCase(recordId) ?: return@launch
+            val variables = getVariablesByRecordIdUseCase(recordId)
+
+            isEditMode = true
+            editRecordId = recordId
+
+            _recordData.value = RecordData(
+                selectedDate = record.date,
+                selectedEnemy = KboTeam.entries.find { it.name == record.opponentTeam },
+                selectedStadium = record.stadium,
+                gameResult = record.result,
+                variables = if (variables.isNotEmpty()) {
+                    variables.map { VariableInput(it.category, it.value) }
+                } else {
+                    VariableCategory.entries.map {
+                        VariableInput(
+                            category = if (isKorean) it.displayName else it.displayNameEn,
+                            value = ""
+                        )
+                    }
+                }
+            )
+        }
+    }
 
     fun initVariables(isKorean: Boolean) {
         if (_recordData.value.variables.isEmpty()) {
@@ -68,18 +104,22 @@ class AddRecordViewModel @Inject constructor(
     fun saveRecord(onSuccess: () -> Unit) {
         viewModelScope.launch {
             val data = _recordData.value
-            addGameRecordUseCase(
-                record = GameRecord(
-                    date = data.selectedDate,
-                    opponentTeam = data.selectedEnemy?.name ?: "",
-                    stadium = data.selectedStadium,
-                    result = data.gameResult,
-                    memo = ""
-                ),
-                variables = data.variables
-                    .filter { it.value.isNotBlank() }
-                    .map { GameVariable(category = it.category, value = it.value) }
+            val record = GameRecord(
+                id = if (isEditMode) editRecordId else 0,
+                date = data.selectedDate,
+                opponentTeam = data.selectedEnemy?.name ?: "",
+                stadium = data.selectedStadium,
+                result = data.gameResult,
+                memo = ""
             )
+            val variables = data.variables
+                .filter { it.value.isNotBlank() }
+                .map { GameVariable(category = it.category, value = it.value) }
+            if (isEditMode) {
+                updateGameRecordUseCase(record, variables)
+            } else {
+                addGameRecordUseCase(record, variables)
+            }
             onSuccess()
         }
     }
