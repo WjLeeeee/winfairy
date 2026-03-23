@@ -1,6 +1,7 @@
 package com.woojin.winfairy.feature.record
 
 import android.widget.Toast
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -24,7 +25,6 @@ import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBackIos
-import androidx.compose.material.icons.filled.Approval
 import androidx.compose.material.icons.filled.ArrowDropDown
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Clear
@@ -43,6 +43,7 @@ import androidx.compose.material3.TextButton
 import androidx.compose.material3.rememberDatePickerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -51,6 +52,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.style.TextAlign
@@ -60,6 +62,7 @@ import androidx.compose.ui.unit.sp
 import com.woojin.winfairy.core.model.GameResult
 import com.woojin.winfairy.core.model.KboTeam
 import com.woojin.winfairy.core.model.VariableCategory
+import com.woojin.winfairy.core.ui.logoRes
 import java.time.LocalDate
 import java.time.ZoneOffset
 import java.time.format.DateTimeFormatter
@@ -121,9 +124,9 @@ fun AddRecordScreen(
                 baseTitle = R.string.stadium
             ) {
                 Stadium(
-                    myTeamStadium = if (isKorean) selectedTeam.stadium else selectedTeam.stadiumEn,
+                    myTeam = selectedTeam,
                     selectedStadium = selectedStadium,
-                    onSelect = { selectedStadium = it }
+                    onSelect = { selectedStadium = if (isKorean) it.stadium else it.stadiumEn }
                 )
             }
             AddRecordBase(
@@ -327,16 +330,15 @@ fun EnemyTeam(
 
 @Composable
 fun Stadium(
-    myTeamStadium: String,
+    myTeam: KboTeam,
     selectedStadium: String,
-    onSelect: (String) -> Unit,
+    onSelect: (KboTeam) -> Unit,
 ) {
     val isKorean = Locale.getDefault().language == "ko"
     var expanded by remember { mutableStateOf(false) }
-    val stadiums = KboTeam.entries
-        .sortedBy { if (isKorean) it.stadium != myTeamStadium else it.stadiumEn != myTeamStadium }
-        .map { if (isKorean) it.stadium else it.stadiumEn
-    }
+    val myTeamStadium = if (isKorean) myTeam.stadium else myTeam.stadiumEn
+
+    var currentSelectedTeamLogo by remember { mutableIntStateOf(myTeam.logoRes()) }
 
     Box(modifier = Modifier.fillMaxWidth()) {
         Row(
@@ -348,11 +350,12 @@ fun Stadium(
                 .padding(12.dp, 16.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            Icon(
-                imageVector = Icons.Default.Approval,
+            Image(
+                painter = painterResource(currentSelectedTeamLogo),
                 contentDescription = null,
-                tint = Color(0xFF999999),
-                modifier = Modifier.size(18.dp)
+                modifier = Modifier
+                    .size(24.dp)
+                    .clip(CircleShape)
             )
             Spacer(modifier = Modifier.width(10.dp))
             Text(
@@ -377,22 +380,39 @@ fun Stadium(
                 .heightIn(max = 250.dp)
                 .background(Color.White)
         ) {
-            stadiums.forEach { stadium ->
-                DropdownMenuItem(
-                    text = {
-                        Text(
-                            text = stadium,
-                            fontSize = 14.sp,
-                            color = if (stadium == selectedStadium) MaterialTheme.colorScheme.primary
-                            else MaterialTheme.colorScheme.onBackground
-                        )
-                    },
-                    onClick = {
-                        onSelect(stadium)
-                        expanded = false
-                    }
-                )
-            }
+            KboTeam.entries
+                .sortedBy { if (isKorean) it.stadium != myTeamStadium else it.stadiumEn != myTeamStadium }
+                .forEach { team ->
+                    val stadium = if (isKorean) team.stadium else team.stadiumEn
+                    DropdownMenuItem(
+                        text = {
+                            Row(
+                                verticalAlignment = Alignment.CenterVertically,
+                                horizontalArrangement = Arrangement.spacedBy(10.dp)
+                            ) {
+                                Image(
+                                    painter = painterResource(team.logoRes()),
+                                    contentDescription = null,
+                                    modifier = Modifier
+                                        .size(24.dp)
+                                        .clip(CircleShape)
+                                )
+                                Text(
+                                    text = stadium,
+                                    fontSize = 14.sp,
+                                    color = if (stadium == selectedStadium)
+                                        MaterialTheme.colorScheme.primary
+                                    else MaterialTheme.colorScheme.onBackground
+                                )
+                            }
+                        },
+                        onClick = {
+                            onSelect(team)
+                            expanded = false
+                            currentSelectedTeamLogo = team.logoRes()
+                        }
+                    )
+                }
         }
     }
 }
