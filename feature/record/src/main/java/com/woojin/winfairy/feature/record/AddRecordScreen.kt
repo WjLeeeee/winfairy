@@ -2,6 +2,7 @@ package com.woojin.winfairy.feature.record
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -55,12 +56,17 @@ fun AddRecordScreen(
                 .fillMaxSize()
                 .background(MaterialTheme.colorScheme.background)
                 .padding(innerPadding)
-                .padding(horizontal = 20.dp)
+                .padding(horizontal = 20.dp),
+            verticalArrangement = Arrangement.spacedBy(12.dp)
         ) {
             TopLayout(
                 onBackClick = { onComplete() }
             )
-            DateLayout()
+            AddRecordBase(
+                baseTitle = R.string.date
+            ) {
+                DateLayout()
+            }
         }
     }
 }
@@ -91,6 +97,33 @@ fun TopLayout(
     }
 }
 
+@Composable
+fun AddRecordBase(
+    baseTitle: Int,
+    baseSubTitle: Int? = null,
+    content: @Composable () -> Unit,
+) {
+    Column(modifier = Modifier.fillMaxWidth()) {
+        Row(modifier = Modifier.fillMaxWidth()) {
+            Text(
+                text = stringResource(baseTitle),
+                fontSize = 16.sp,
+                color = MaterialTheme.colorScheme.onBackground
+            )
+            baseSubTitle?.let { subTitle ->
+                Spacer(modifier = Modifier.weight(1f))
+                Text(
+                    text = stringResource(subTitle),
+                    fontSize = 15.sp,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
+            }
+        }
+        Spacer(modifier = Modifier.height(8.dp))
+        content()
+    }
+}
+
 @OptIn(ExperimentalTime::class)
 @Composable
 fun DateLayout() {
@@ -99,35 +132,27 @@ fun DateLayout() {
 
     val formatter = DateTimeFormatter.ofPattern("yyyy년 M월 d일 (E)", Locale.KOREAN)
 
-    Column(modifier = Modifier.fillMaxWidth()) {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .clip(RoundedCornerShape(10.dp))
+            .background(Color.White)
+            .clickable { showDatePicker = true }
+            .padding(12.dp, 16.dp),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Icon(
+            imageVector = Icons.Default.DateRange,
+            contentDescription = null,
+            tint = Color(0xFF999999),
+            modifier = Modifier.size(18.dp)
+        )
+        Spacer(modifier = Modifier.width(10.dp))
         Text(
-            text = stringResource(R.string.date),
-            fontSize = 16.sp,
+            text = selectedDate.format(formatter),
+            fontSize = 14.sp,
             color = MaterialTheme.colorScheme.onBackground
         )
-        Spacer(modifier = Modifier.height(8.dp))
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .clip(RoundedCornerShape(10.dp))
-                .background(Color.White)
-                .clickable { showDatePicker = true }
-                .padding(12.dp, 16.dp),
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Icon(
-                imageVector = Icons.Default.DateRange,
-                contentDescription = null,
-                tint = Color(0xFF999999),
-                modifier = Modifier.size(18.dp)
-            )
-            Spacer(modifier = Modifier.width(10.dp))
-            Text(
-                text = selectedDate.format(formatter),
-                fontSize = 14.sp,
-                color = MaterialTheme.colorScheme.onBackground
-            )
-        }
     }
 
     if (showDatePicker) {
