@@ -6,12 +6,13 @@ import androidx.room.Insert
 import androidx.room.Query
 import androidx.room.Update
 import com.woojin.winfairy.core.database.entity.GameRecordEntity
+import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface GameRecordDao {
 
     @Query("SELECT * FROM game_record ORDER BY date DESC")
-    suspend fun getAllRecords(): List<GameRecordEntity>
+    fun getAllRecords(): Flow<List<GameRecordEntity>>
 
     @Query("SELECT * FROM game_record WHERE id = :id")
     suspend fun getRecordById(id: Long): GameRecordEntity?

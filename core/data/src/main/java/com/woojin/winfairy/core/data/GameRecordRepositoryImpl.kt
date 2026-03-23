@@ -1,15 +1,32 @@
 package com.woojin.winfairy.core.data
 
 import com.woojin.winfairy.core.data.mapper.toDomain
+import com.woojin.winfairy.core.data.mapper.toEntity
 import com.woojin.winfairy.core.database.dao.GameRecordDao
+import com.woojin.winfairy.core.database.dao.GameVariableDao
 import com.woojin.winfairy.core.domain.repository.GameRecordRepository
 import com.woojin.winfairy.core.model.GameRecord
+import com.woojin.winfairy.core.model.GameVariable
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.map
 import javax.inject.Inject
 
 class GameRecordRepositoryImpl @Inject constructor(
-    private val gameRecordDao: GameRecordDao
+    private val gameRecordDao: GameRecordDao,
+    private val gameVariableDao: GameVariableDao
 ) : GameRecordRepository {
-    override suspend fun getAllRecord(): List<GameRecord> {
-        return gameRecordDao.getAllRecords().map { it.toDomain() }
+    override fun getAllRecord(): Flow<List<GameRecord>> {
+        return gameRecordDao.getAllRecords().map { entities ->
+            entities.map { it.toDomain() }
+        }
+    }
+
+    override suspend fun addRecord(record: GameRecord, variables: List<GameVariable>) {
+        val recordId = gameRecordDao.insertRecord(record.toEntity())
+        if (variables.isNotEmpty()) {
+            gameVariableDao.insertVariables(
+                variables.map { it.toEntity(gameRecordId = recordId) }
+            )
+        }
     }
 }

@@ -2,13 +2,13 @@ package com.woojin.winfairy.core.domain.usecase
 
 import com.woojin.winfairy.core.domain.repository.GameRecordRepository
 import com.woojin.winfairy.core.model.GameRecord
-import kotlinx.coroutines.flow.Flow
+import com.woojin.winfairy.core.model.GameVariable
 import javax.inject.Inject
 
-class GetAllRecordUseCase @Inject constructor(
+class AddGameRecordUseCase @Inject constructor(
     private val repository: GameRecordRepository
 ) {
-    operator fun invoke(): Flow<List<GameRecord>> {
-        return repository.getAllRecord()
+    suspend operator fun invoke(record: GameRecord, variables: List<GameVariable>) {
+        repository.addRecord(record, variables)
     }
 }

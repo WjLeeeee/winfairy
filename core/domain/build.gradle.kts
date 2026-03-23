@@ -15,4 +15,5 @@ kotlin {
 dependencies {
     implementation(project(":core:model"))
     implementation(libs.javax.inject)
+    implementation(libs.kotlinx.coroutines.core)
 }

@@ -64,7 +64,6 @@ import androidx.compose.ui.unit.sp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import com.woojin.winfairy.core.model.GameResult
 import com.woojin.winfairy.core.model.KboTeam
-import com.woojin.winfairy.core.model.VariableCategory
 import com.woojin.winfairy.core.ui.logoRes
 import java.time.LocalDate
 import java.time.ZoneOffset
@@ -74,8 +73,7 @@ import kotlin.time.ExperimentalTime
 
 @Composable
 fun AddRecordScreen(
-    onBack: () -> Unit,
-    onComplete: (RecordData) -> Unit,
+    onComplete: () -> Unit,
     selectedTeam: KboTeam,
     viewModel: AddRecordViewModel = hiltViewModel()
 ) {
@@ -106,7 +104,7 @@ fun AddRecordScreen(
             verticalArrangement = Arrangement.spacedBy(12.dp)
         ) {
             TopLayout(
-                onBackClick = { onBack() }
+                onBackClick = { onComplete() }
             )
             AddRecordBase(
                 baseTitle = R.string.date
@@ -167,7 +165,7 @@ fun AddRecordScreen(
                         if (recordData.selectedEnemy == null) {
                             Toast.makeText(context, R.string.choose_enemy_team, Toast.LENGTH_SHORT).show()
                         } else {
-                            onComplete(recordData)
+                            viewModel.saveRecord { onComplete() }
                         }
                     }
                     .padding(vertical = 12.dp),

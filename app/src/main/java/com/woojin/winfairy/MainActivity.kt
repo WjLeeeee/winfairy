@@ -75,10 +75,7 @@ class MainActivity : ComponentActivity() {
                     composable<AddRecord> {
                         AddRecordScreen(
                             selectedTeam = selectedTeam!!,
-                            onBack = {
-                                navController.popBackStack()
-                            },
-                            onComplete = { recordData ->
+                            onComplete = {
                                 navController.popBackStack()
                             }
                         )
