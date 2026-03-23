@@ -4,6 +4,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -48,6 +49,7 @@ fun AddRecordScreen(
     onComplete: () -> Unit,
     selectedTeam: KboTeam,
 ) {
+    var selectedEnemy by remember { mutableStateOf<KboTeam?>(null) }
     Scaffold(
         modifier = Modifier.fillMaxSize()
     ) { innerPadding ->
@@ -66,6 +68,15 @@ fun AddRecordScreen(
                 baseTitle = R.string.date
             ) {
                 DateLayout()
+            }
+            AddRecordBase(
+                baseTitle = R.string.enemy_team
+            ) {
+                EnemyTeam(
+                    myTeam = selectedTeam,
+                    selectedEnemyTeam = selectedEnemy,
+                    onSelected = { selectedEnemyTeam -> selectedEnemy = selectedEnemyTeam }
+                )
             }
         }
     }
@@ -187,5 +198,39 @@ fun DateLayout() {
                 showModeToggle = false,
             )
         }
+    }
+}
+
+@Composable
+fun EnemyTeam(
+    myTeam: KboTeam,
+    selectedEnemyTeam: KboTeam?,
+    onSelected: (KboTeam) -> Unit,
+) {
+    val isKorean = Locale.getDefault().language == "ko"
+
+    FlowRow(
+        modifier = Modifier.fillMaxWidth(),
+        horizontalArrangement = Arrangement.spacedBy(6.dp),
+        verticalArrangement = Arrangement.spacedBy(6.dp)
+    ) {
+        KboTeam.entries
+            .filter { it != myTeam }
+            .forEach { team ->
+                val isSelected = team == selectedEnemyTeam
+                Text(
+                    text = if (isKorean) team.teamName else team.teamNameEn,
+                    fontSize = 12.sp,
+                    color = if (isSelected) Color.White else Color(0xFF666666),
+                    modifier = Modifier
+                        .clip(RoundedCornerShape(20.dp))
+                        .background(
+                            if (isSelected) MaterialTheme.colorScheme.primary
+                            else Color.White
+                        )
+                        .clickable { onSelected(team) }
+                        .padding(horizontal = 14.dp, vertical = 8.dp)
+                )
+            }
     }
 }
