@@ -7,7 +7,12 @@
     <string name="enemy_team">상대 팀</string>
     <string name="stadium">구장</string>
     <string name="game_result">경기 결과</string>
-    <string name="win">win</string>
-    <string name="lose">lose</string>
-    <string name="draw">draw</string>
+    <string name="win">승리</string>
+    <string name="lose">패배</string>
+    <string name="draw">무승부</string>
+    <string name="record_variables">변수 기록</string>
+    <string name="options">선택사항</string>
+    <string name="save_record">기록 저장</string>
+    <string name="choose_enemy_team">상대 팀을 선택해주세요.</string>
+    <string name="input_variable_text_field">%s 입력</string>
 </resources>

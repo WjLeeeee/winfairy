@@ -1,5 +1,6 @@
 package com.woojin.winfairy.feature.record
 
+import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -16,8 +17,11 @@ import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.BasicTextField
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBackIos
 import androidx.compose.material.icons.filled.Approval
@@ -46,12 +50,16 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.woojin.winfairy.core.model.GameResult
 import com.woojin.winfairy.core.model.KboTeam
+import com.woojin.winfairy.core.model.VariableCategory
 import java.time.LocalDate
 import java.time.ZoneOffset
 import java.time.format.DateTimeFormatter
@@ -63,20 +71,30 @@ fun AddRecordScreen(
     onComplete: () -> Unit,
     selectedTeam: KboTeam,
 ) {
+    val context = LocalContext.current
     val isKorean = Locale.getDefault().language == "ko"
+    val scrollState = rememberScrollState()
+
     var selectedDate by remember { mutableStateOf(LocalDate.now().toString()) }
     var selectedEnemy by remember { mutableStateOf<KboTeam?>(null) }
     var selectedStadium by remember { mutableStateOf(if (isKorean) selectedTeam.stadium else selectedTeam.stadiumEn) }
     var gameResult by remember { mutableStateOf(GameResult.WIN) }
+    var variables by remember {
+        mutableStateOf(
+            VariableCategory.entries.map { VariableInput(if (isKorean) it.displayName else it.displayNameEn, "") }
+        )
+    }
     Scaffold(
         modifier = Modifier.fillMaxSize()
     ) { innerPadding ->
         Column(
             modifier = Modifier
                 .fillMaxSize()
+                .verticalScroll(scrollState)
                 .background(MaterialTheme.colorScheme.background)
                 .padding(innerPadding)
-                .padding(horizontal = 20.dp),
+                .padding(horizontal = 20.dp)
+                .padding(bottom = 20.dp),
             verticalArrangement = Arrangement.spacedBy(12.dp)
         ) {
             TopLayout(
@@ -116,6 +134,37 @@ fun AddRecordScreen(
                     onSelect = { gameResult = it }
                 )
             }
+            AddRecordBase(
+                baseTitle = R.string.record_variables,
+                baseSubTitle = R.string.options
+            ) {
+                VariableRecord(
+                    variables = variables,
+                    onVariableChange = { index, value ->
+                        variables = variables.toMutableList().apply {
+                            this[index] = this[index].copy(value = value)
+                        }
+                    }
+                )
+            }
+            Text(
+                text = stringResource(R.string.save_record),
+                fontSize = 16.sp,
+                color = MaterialTheme.colorScheme.onPrimary,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .clip(RoundedCornerShape(8.dp))
+                    .background(MaterialTheme.colorScheme.primary)
+                    .clickable {
+                        if (selectedEnemy == null) {
+                            Toast.makeText(context, R.string.choose_enemy_team, Toast.LENGTH_SHORT).show()
+                        } else {
+                            onComplete()
+                        }
+                    }
+                    .padding(vertical = 12.dp),
+                textAlign = TextAlign.Center
+            )
         }
     }
 }
@@ -163,7 +212,7 @@ fun AddRecordBase(
                 Spacer(modifier = Modifier.weight(1f))
                 Text(
                     text = stringResource(subTitle),
-                    fontSize = 15.sp,
+                    fontSize = 12.sp,
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
             }
@@ -406,6 +455,64 @@ fun GameResultSelector(
                     text = label,
                     fontSize = 12.sp,
                     color = if (isSelected) Color.White else Color(0xFF888888)
+                )
+            }
+        }
+    }
+}
+@Composable
+fun VariableRecord(
+    variables: List<VariableInput>,
+    onVariableChange: (Int, String) -> Unit,
+) {
+    Column(
+        modifier = Modifier.fillMaxWidth(),
+        verticalArrangement = Arrangement.spacedBy(8.dp)
+    ) {
+        variables.forEachIndexed { index, variable ->
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.spacedBy(8.dp),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Box(
+                    modifier = Modifier
+                        .width(90.dp)
+                        .clip(RoundedCornerShape(10.dp))
+                        .background(Color.White)
+                        .padding(horizontal = 12.dp, vertical = 8.dp),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Text(
+                        text = variable.category,
+                        fontSize = 12.sp,
+                        color = Color(0xFF999999)
+                    )
+                }
+                BasicTextField(
+                    value = variable.value,
+                    onValueChange = { onVariableChange(index, it) },
+                    modifier = Modifier
+                        .weight(1f)
+                        .clip(RoundedCornerShape(10.dp))
+                        .background(Color.White)
+                        .padding(12.dp, 8.dp),
+                    textStyle = TextStyle(
+                        fontSize = 13.sp,
+                        color = MaterialTheme.colorScheme.onBackground
+                    ),
+                    decorationBox = { innerTextField ->
+                        Box(contentAlignment = Alignment.CenterStart) {
+                            if (variable.value.isEmpty()) {
+                                Text(
+                                    text = stringResource(R.string.input_variable_text_field, variable.category),
+                                    fontSize = 13.sp,
+                                    color = Color(0xFFCCCCCC)
+                                )
+                            }
+                            innerTextField()
+                        }
+                    }
                 )
             }
         }
