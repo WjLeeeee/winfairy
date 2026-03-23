@@ -6,7 +6,7 @@ import javax.inject.Inject
 
 class GetWinRateUseCase @Inject constructor() {
     operator fun invoke(records: List<GameRecord>): Float {
-        val validRecords = records.filter { it.result != GameResult.CANCELED }
+        val validRecords = records.filter { it.result != GameResult.CANCELED }.filter { it.result != GameResult.DRAW }
         if (validRecords.isEmpty()) return 0f
         val wins = validRecords.count { it.result == GameResult.WIN }
         return wins.toFloat() / validRecords.size * 100
