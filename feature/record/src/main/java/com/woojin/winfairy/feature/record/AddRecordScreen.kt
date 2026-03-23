@@ -42,6 +42,8 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.rememberDatePickerState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
@@ -59,6 +61,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import com.woojin.winfairy.core.model.GameResult
 import com.woojin.winfairy.core.model.KboTeam
 import com.woojin.winfairy.core.model.VariableCategory
@@ -71,22 +74,24 @@ import kotlin.time.ExperimentalTime
 
 @Composable
 fun AddRecordScreen(
-    onComplete: () -> Unit,
+    onBack: () -> Unit,
+    onComplete: (RecordData) -> Unit,
     selectedTeam: KboTeam,
+    viewModel: AddRecordViewModel = hiltViewModel()
 ) {
     val context = LocalContext.current
     val isKorean = Locale.getDefault().language == "ko"
     val scrollState = rememberScrollState()
 
-    var selectedDate by remember { mutableStateOf(LocalDate.now().toString()) }
-    var selectedEnemy by remember { mutableStateOf<KboTeam?>(null) }
-    var selectedStadium by remember { mutableStateOf(if (isKorean) selectedTeam.stadium else selectedTeam.stadiumEn) }
-    var gameResult by remember { mutableStateOf(GameResult.WIN) }
-    var variables by remember {
-        mutableStateOf(
-            VariableCategory.entries.map { VariableInput(if (isKorean) it.displayName else it.displayNameEn, "") }
+    val recordData by viewModel.recordData.collectAsState()
+
+    LaunchedEffect(Unit) {
+        viewModel.initVariables(isKorean)
+        viewModel.updateRecordData(
+            stadium = if (isKorean) selectedTeam.stadium else selectedTeam.stadiumEn
         )
     }
+
     Scaffold(
         modifier = Modifier.fillMaxSize()
     ) { innerPadding ->
@@ -101,14 +106,14 @@ fun AddRecordScreen(
             verticalArrangement = Arrangement.spacedBy(12.dp)
         ) {
             TopLayout(
-                onBackClick = { onComplete() }
+                onBackClick = { onBack() }
             )
             AddRecordBase(
                 baseTitle = R.string.date
             ) {
                 DateLayout(
-                    selectedDate = selectedDate,
-                    onDateSelected = { selectedDate = it }
+                    selectedDate = recordData.selectedDate,
+                    onDateSelected = { viewModel.updateRecordData(date = it) }
                 )
             }
             AddRecordBase(
@@ -116,8 +121,8 @@ fun AddRecordScreen(
             ) {
                 EnemyTeam(
                     myTeam = selectedTeam,
-                    selectedEnemyTeam = selectedEnemy,
-                    onSelected = { selectedEnemyTeam -> selectedEnemy = selectedEnemyTeam }
+                    selectedEnemyTeam = recordData.selectedEnemy,
+                    onSelected = { selectedEnemyTeam -> viewModel.updateRecordData(enemy = selectedEnemyTeam) }
                 )
             }
             AddRecordBase(
@@ -125,16 +130,16 @@ fun AddRecordScreen(
             ) {
                 Stadium(
                     myTeam = selectedTeam,
-                    selectedStadium = selectedStadium,
-                    onSelect = { selectedStadium = if (isKorean) it.stadium else it.stadiumEn }
+                    selectedStadium = recordData.selectedStadium,
+                    onSelect = { viewModel.updateRecordData(stadium = if (isKorean) it.stadium else it.stadiumEn) }
                 )
             }
             AddRecordBase(
                 baseTitle = R.string.game_result
             ) {
                 GameResultSelector(
-                    resultState = gameResult,
-                    onSelect = { gameResult = it }
+                    resultState = recordData.gameResult,
+                    onSelect = { viewModel.updateRecordData(gameResult = it) }
                 )
             }
             AddRecordBase(
@@ -142,11 +147,11 @@ fun AddRecordScreen(
                 baseSubTitle = R.string.options
             ) {
                 VariableRecord(
-                    variables = variables,
+                    variables = recordData.variables,
                     onVariableChange = { index, value ->
-                        variables = variables.toMutableList().apply {
-                            this[index] = this[index].copy(value = value)
-                        }
+                        viewModel.updateVariable(
+                            index = index, value = value
+                        )
                     }
                 )
             }
@@ -159,10 +164,10 @@ fun AddRecordScreen(
                     .clip(RoundedCornerShape(8.dp))
                     .background(MaterialTheme.colorScheme.primary)
                     .clickable {
-                        if (selectedEnemy == null) {
+                        if (recordData.selectedEnemy == null) {
                             Toast.makeText(context, R.string.choose_enemy_team, Toast.LENGTH_SHORT).show()
                         } else {
-                            onComplete()
+                            onComplete(recordData)
                         }
                     }
                     .padding(vertical = 12.dp),
