@@ -15,4 +15,7 @@
     <string name="delete_record_dialog_title">기록 삭제</string>
     <string name="delete_record_dialog_description">이 직관 기록을 삭제할까요?</string>
     <string name="elimination">삭제</string>
+    <string name="need_more_records_title">분석 표본이 부족해요</string>
+    <string name="need_more_records_description">직관 기록을 3경기 이상 추가하면\n승률 분석을 확인할 수 있어요!</string>
+    <string name="current_game_count">현재 %s경기 / 3경기</string>
 </resources>

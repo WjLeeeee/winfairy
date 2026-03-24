@@ -45,9 +45,8 @@ fun RecordItem(
 
     if (recordItem.isEmpty()) {
         Box(
-            modifier = Modifier
+            modifier = modifier
                 .fillMaxWidth()
-                .height(200.dp)
                 .clip(RoundedCornerShape(8.dp))
                 .background(Color.White),
             contentAlignment = Alignment.Center
