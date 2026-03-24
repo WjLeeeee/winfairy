@@ -1,4 +1,4 @@
-package com.woojin.winfairy.feature.home
+package com.woojin.winfairy.feature.home.record
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.combinedClickable
@@ -32,6 +32,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.woojin.winfairy.core.model.GameRecord
 import com.woojin.winfairy.core.model.GameResult
+import com.woojin.winfairy.feature.home.R
 
 @Composable
 fun RecordItem(

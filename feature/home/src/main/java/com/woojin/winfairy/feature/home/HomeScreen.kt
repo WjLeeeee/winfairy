@@ -21,7 +21,6 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SecondaryTabRow
 import androidx.compose.material3.Tab
-import androidx.compose.material3.TabRow
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
@@ -44,6 +43,9 @@ import com.woojin.winfairy.core.model.GameResult
 import com.woojin.winfairy.core.model.KboTeam
 import com.woojin.winfairy.core.model.WinTier
 import com.woojin.winfairy.core.ui.iconRes
+import com.woojin.winfairy.feature.home.achievement.AchievementItem
+import com.woojin.winfairy.feature.home.analysis.AnalysisItem
+import com.woojin.winfairy.feature.home.record.RecordItem
 import java.util.Locale
 
 @Composable

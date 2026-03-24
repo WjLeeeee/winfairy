@@ -1,4 +1,4 @@
-package com.woojin.winfairy.feature.home
+package com.woojin.winfairy.feature.home.analysis
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
@@ -17,9 +17,10 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.woojin.winfairy.core.model.GameRecord
+import com.woojin.winfairy.feature.home.R
 
 @Composable
-fun AchievementItem(
+fun AnalysisItem(
     modifier: Modifier = Modifier,
     recordItem: List<GameRecord>
 ) {
