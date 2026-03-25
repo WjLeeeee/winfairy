@@ -59,6 +59,8 @@ fun HomeScreen(
     val winRate by homeViewModel.winRate.collectAsState()
     val tier by homeViewModel.tier.collectAsState()
 
+    val analysisResult by homeViewModel.analysisResult.collectAsState()
+
     var selectedTab by remember { mutableIntStateOf(0) }
     Scaffold(
         containerColor = MaterialTheme.colorScheme.primary
@@ -105,7 +107,7 @@ fun HomeScreen(
                         onItemClick = { recordId -> onEditRecord(recordId) },
                         onDelete = { recordId -> homeViewModel.deleteRecord(recordId) }
                     )
-                    1 -> AnalysisItem(modifier = Modifier.weight(1f), recordItem = allRecord)
+                    1 -> AnalysisItem(modifier = Modifier.weight(1f), analysisResult = analysisResult)
                     2 -> AchievementItem(modifier = Modifier.weight(1f), recordItem = allRecord)
                 }
                 Spacer(modifier = Modifier.height(20.dp))

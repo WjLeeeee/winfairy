@@ -7,6 +7,7 @@ import com.woojin.winfairy.core.database.dao.GameRecordDao
 import com.woojin.winfairy.core.database.dao.GameVariableDao
 import com.woojin.winfairy.core.domain.repository.GameRecordRepository
 import com.woojin.winfairy.core.model.GameRecord
+import com.woojin.winfairy.core.model.GameRecordWithVariables
 import com.woojin.winfairy.core.model.GameVariable
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
@@ -55,5 +56,17 @@ class GameRecordRepositoryImpl @Inject constructor(
         val deleteRecordById = gameRecordDao.getRecordById(recordId) ?: return
         gameVariableDao.deleteVariablesByRecordId(recordId)
         gameRecordDao.deleteRecord(deleteRecordById)
+    }
+
+    override fun getAllRecordsWithVariablesFlow(): Flow<List<GameRecordWithVariables>> {
+        return gameRecordDao.getAllRecords().map { entities ->
+            entities.map { entity ->
+                val variables = gameVariableDao.getVariablesByRecordId(entity.id)
+                GameRecordWithVariables(
+                    record = entity.toDomain(),
+                    variables = variables.map { GameVariable(it.category, it.value) }
+                )
+            }
+        }
     }
 }
