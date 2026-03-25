@@ -14,12 +14,13 @@ import com.woojin.winfairy.core.model.VariableWinRate
 @Composable
 fun AnalysisItem(
     modifier: Modifier = Modifier,
+    gameCount: Int,
     analysisResult: List<VariableWinRate>
 ) {
-    if (analysisResult.size < 3) {
+    if (gameCount < 3) {
         NeedMoreGameRecord(
             modifier = modifier,
-            gameCount = analysisResult.size
+            gameCount = gameCount
         )
     } else {
         Column(

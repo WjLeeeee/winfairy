@@ -107,7 +107,7 @@ fun HomeScreen(
                         onItemClick = { recordId -> onEditRecord(recordId) },
                         onDelete = { recordId -> homeViewModel.deleteRecord(recordId) }
                     )
-                    1 -> AnalysisItem(modifier = Modifier.weight(1f), analysisResult = analysisResult)
+                    1 -> AnalysisItem(modifier = Modifier.weight(1f), gameCount = allRecord.size, analysisResult = analysisResult)
                     2 -> AchievementItem(modifier = Modifier.weight(1f), recordItem = allRecord)
                 }
                 Spacer(modifier = Modifier.height(20.dp))
