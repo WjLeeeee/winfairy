@@ -25,7 +25,7 @@ class AnalyzeAllVariablesUseCase @Inject constructor() {
             }
         }
 
-        val filtered = allPairs
+        return allPairs
             .groupBy { "${it.first}:${it.second.first}" }
             .map { (key, games) ->
                 val (category, value) = key.split(":", limit = 2)
@@ -39,8 +39,9 @@ class AnalyzeAllVariablesUseCase @Inject constructor() {
                     winRate = if (total > 0) wins.toFloat() / total * 100 else 0f
                 )
             }
-            .sortedWith(compareByDescending<VariableWinRate> { it.winRate }.thenByDescending { it.totalGames })
-        val result = filtered.filter { it.totalGames >= 2 }
-        return result.ifEmpty { filtered }
+            .sortedWith(
+                compareByDescending<VariableWinRate> { it.winRate }
+                    .thenByDescending { it.totalGames }
+            )
     }
 }
