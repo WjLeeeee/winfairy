@@ -13,6 +13,9 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.EmojiEvents
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -75,7 +78,7 @@ fun BestWinRateItem(
                 modifier = Modifier
                     .clip(RoundedCornerShape(10.dp))
                     .background(MaterialTheme.colorScheme.primaryContainer)
-                    .padding(horizontal = 8.dp, vertical = 2.dp)
+                    .padding(horizontal = 12.dp, vertical = 2.dp)
             ) {
                 Text(
                     text = stringResource(R.string.best_win_rate),
@@ -95,5 +98,12 @@ fun BestWinRateItem(
                 color = MaterialTheme.colorScheme.onSurfaceVariant
             )
         }
+        Spacer(modifier = Modifier.weight(1f))
+        Icon(
+            imageVector = Icons.Default.EmojiEvents,
+            contentDescription = null,
+            tint = primary.copy(alpha = 0.3f),
+            modifier = Modifier.size(36.dp)
+        )
     }
 }
