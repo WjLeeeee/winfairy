@@ -22,4 +22,10 @@
     <string name="all_game_for_win_rate">%s | %s game %swin</string>
     <string name="overall_win_rate_ranking">overall win rate ranking</string>
     <string name="category_game_count">%s | %s game</string>
+    <string name="achievement_rate">achievement rate</string>
+    <string name="tap_to_timeline">Tap to view the achievement timeline</string>
+    <string name="achieved">Achieved</string>
+    <string name="not_achieved">Not Achieved</string>
+    <string name="achievement_timeline">Achievement Timeline</string>
+    <string name="next_achievement">Next Achievement?</string>
 </resources>

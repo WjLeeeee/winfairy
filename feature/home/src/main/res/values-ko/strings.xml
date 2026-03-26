@@ -22,4 +22,10 @@
     <string name="all_game_for_win_rate">%s | %s경기 중 %s승</string>
     <string name="overall_win_rate_ranking">전체 승률 랭킹</string>
     <string name="category_game_count">%s | %s 경기</string>
+    <string name="achievement_rate">업적 달성률</string>
+    <string name="tap_to_timeline">탭하여 달성 타임라인 보기</string>
+    <string name="achieved">달성완료</string>
+    <string name="not_achieved">미달성</string>
+    <string name="achievement_timeline">업적 달성 타임라인</string>
+    <string name="next_achievement">다음 업적은?</string>
 </resources>
