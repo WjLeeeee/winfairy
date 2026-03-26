@@ -20,4 +20,6 @@
     <string name="current_game_count">Current %s / 3 matches</string>
     <string name="best_win_rate">best winrate</string>
     <string name="all_game_for_win_rate">%s | %s game %swin</string>
+    <string name="overall_win_rate_ranking">overall win rate ranking</string>
+    <string name="category_game_count">%s | %s game</string>
 </resources>

@@ -16,6 +16,7 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
+import java.util.Locale
 import javax.inject.Inject
 
 @HiltViewModel
@@ -109,7 +110,11 @@ class HomeViewModel @Inject constructor(
         viewModelScope.launch {
             //모든 기록과 변수를 가져와서, 분석 화면 결과에서 사용될 승률 계산
             getAllRecordsWithVariables().collect { recordsWithVars ->
-                _analysisResult.value = analyzeAllVariables(recordsWithVars)
+                _analysisResult.value =
+                    analyzeAllVariables(
+                        records = recordsWithVars,
+                        isKorean = Locale.getDefault().language == "ko"
+                    )
             }
         }
     }

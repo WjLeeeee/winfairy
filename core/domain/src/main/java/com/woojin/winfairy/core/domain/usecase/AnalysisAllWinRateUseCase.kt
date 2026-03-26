@@ -6,17 +6,21 @@ import com.woojin.winfairy.core.model.VariableWinRate
 import javax.inject.Inject
 
 class AnalyzeAllVariablesUseCase @Inject constructor() {
-    operator fun invoke(records: List<GameRecordWithVariables>): List<VariableWinRate> {
+    operator fun invoke(
+        records: List<GameRecordWithVariables>,
+        isKorean: Boolean
+    ): List<VariableWinRate> {
         val allPairs = mutableListOf<Pair<String, Pair<String, GameResult>>>()
-
+        val categoryOpponent = if (isKorean) "상대팀" else "Opponent"
+        val categoryStadium = if (isKorean) "구장" else "Stadium"
         records.forEach { recordWithVars ->
             val result = recordWithVars.record.result
             if (result == GameResult.CANCELED) return@forEach
 
             // 상대팀
-            allPairs.add("상대팀" to (recordWithVars.record.opponentTeam to result))
+            allPairs.add(categoryOpponent to ("vs ${recordWithVars.record.opponentTeam}" to result))
             // 구장
-            allPairs.add("구장" to (recordWithVars.record.stadium to result))
+            allPairs.add(categoryStadium to (recordWithVars.record.stadium to result))
             // 변수들
             recordWithVars.variables.forEach { variable ->
                 if (variable.value.isNotBlank()) {

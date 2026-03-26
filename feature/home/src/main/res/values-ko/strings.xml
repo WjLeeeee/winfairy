@@ -20,4 +20,6 @@
     <string name="current_game_count">현재 %s경기 / 3경기</string>
     <string name="best_win_rate">최고 승률</string>
     <string name="all_game_for_win_rate">%s | %s경기 중 %s승</string>
+    <string name="overall_win_rate_ranking">전체 승률 랭킹</string>
+    <string name="category_game_count">%s | %s 경기</string>
 </resources>

@@ -8,8 +8,11 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.woojin.winfairy.core.model.VariableWinRate
+import com.woojin.winfairy.feature.home.R
 
 @Composable
 fun AnalysisItem(
@@ -31,10 +34,11 @@ fun AnalysisItem(
         ) {
             BestWinRateItem(analysisResult = analysisResult)
             Text(
-                text = "전체 승률 랭킹",
-                color = MaterialTheme.colorScheme.onSurfaceVariant
+                text = stringResource(R.string.overall_win_rate_ranking),
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                fontSize = 13.sp
             )
-            AllWinRateRankItem()
+            AllWinRateRankItem(analysisResult = analysisResult)
         }
     }
 }
