@@ -84,7 +84,7 @@ fun AllWinRateRankItem(
                 // 미니 프로그레스바 + 승률
                 Box(
                     modifier = Modifier
-                        .width(50.dp)
+                        .width(100.dp)
                         .height(4.dp)
                         .clip(RoundedCornerShape(2.dp))
                         .background(Color(0xFFEEEEEE))
@@ -104,7 +104,9 @@ fun AllWinRateRankItem(
                     text = "${item.winRate.toInt()}%",
                     fontSize = 13.sp,
                     color = if (item.winRate >= 50f) primary else Color(0xFF888888),
-                    textAlign = TextAlign.End
+                    textAlign = TextAlign.End,
+                    modifier = Modifier
+                        .width(40.dp)
                 )
             }
             if (index < analysisResult.lastIndex) {
