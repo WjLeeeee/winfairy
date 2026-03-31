@@ -31,18 +31,19 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.woojin.winfairy.core.model.Achievement
+import com.woojin.winfairy.core.model.AchievementStatus
 import com.woojin.winfairy.feature.home.R
 import java.util.Locale
 
 @Composable
 fun AchievementList(
     modifier: Modifier = Modifier,
+    achievementItem: List<AchievementStatus>,
     onTimelineClick: () -> Unit,
 ) {
     val isKorean = Locale.getDefault().language == "ko"
-    // TODO: 실제 달성 데이터 연결
-    val achieved = listOf(Achievement.GAME_1, Achievement.WIN_STREAK_3)
-    val notAchieved = Achievement.entries.filter { it !in achieved }
+    val achieved = achievementItem.filter { it.isAchieved }
+    val notAchieved = achievementItem.filter { !it.isAchieved }
     val total = Achievement.entries.size
 
     LazyColumn(
@@ -129,7 +130,7 @@ fun AchievementList(
                         .clip(RoundedCornerShape(10.dp))
                         .background(Color.White)
                 ) {
-                    achieved.forEachIndexed { index, achievement ->
+                    achieved.forEachIndexed { index, status ->
                         Row(
                             modifier = Modifier
                                 .fillMaxWidth()
@@ -144,17 +145,17 @@ fun AchievementList(
                                     .background(MaterialTheme.colorScheme.primaryContainer),
                                 contentAlignment = Alignment.Center
                             ) {
-                                Text(text = achievement.emoji, fontSize = 18.sp)
+                                Text(text = status.achievement.emoji, fontSize = 18.sp)
                             }
                             Column(modifier = Modifier.weight(1f)) {
                                 Text(
-                                    text = if (isKorean) achievement.nameKo else achievement.nameEn,
+                                    text = if (isKorean) status.achievement.nameKo else status.achievement.nameEn,
                                     fontSize = 13.sp,
                                     color = MaterialTheme.colorScheme.onBackground,
                                     lineHeight = 13.sp
                                 )
                                 Text(
-                                    text = if (isKorean) achievement.descriptionKo else achievement.descriptionEn,
+                                    text = if (isKorean) status.achievement.descriptionKo else status.achievement.descriptionEn,
                                     fontSize = 10.sp,
                                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                                     lineHeight = 10.sp
@@ -203,7 +204,7 @@ fun AchievementList(
                         .clip(RoundedCornerShape(10.dp))
                         .background(Color.White)
                 ) {
-                    notAchieved.forEachIndexed { index, achievement ->
+                    notAchieved.forEachIndexed { index, status ->
                         Row(
                             modifier = Modifier
                                 .fillMaxWidth()
@@ -223,21 +224,21 @@ fun AchievementList(
                             }
                             Column(modifier = Modifier.weight(1f)) {
                                 Text(
-                                    text = if (isKorean) achievement.nameKo else achievement.nameEn,
+                                    text = if (isKorean) status.achievement.nameKo else status.achievement.nameEn,
                                     fontSize = 13.sp,
                                     color = MaterialTheme.colorScheme.onBackground,
                                     lineHeight = 13.sp
                                 )
                                 Text(
-                                    text = if (isKorean) achievement.descriptionKo else achievement.descriptionEn,
+                                    text = if (isKorean) status.achievement.descriptionKo else status.achievement.descriptionEn,
                                     fontSize = 10.sp,
                                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                                     lineHeight = 10.sp
                                 )
                             }
-                            // TODO: 진행도 표시 (예: 3/5)
+
                             Text(
-                                text = "0/${achievement.maxProgress}",
+                                text = "0/${status.achievement.maxProgress}",
                                 fontSize = 10.sp,
                                 color = MaterialTheme.colorScheme.onSurfaceVariant
                             )

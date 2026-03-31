@@ -60,6 +60,7 @@ fun HomeScreen(
     val tier by homeViewModel.tier.collectAsState()
 
     val analysisResult by homeViewModel.analysisResult.collectAsState()
+    val achievement by homeViewModel.achievements.collectAsState()
 
     var selectedTab by remember { mutableIntStateOf(0) }
     Scaffold(
@@ -108,7 +109,7 @@ fun HomeScreen(
                         onDelete = { recordId -> homeViewModel.deleteRecord(recordId) }
                     )
                     1 -> AnalysisItem(modifier = Modifier.weight(1f), gameCount = allRecord.size, analysisResult = analysisResult)
-                    2 -> AchievementItem(modifier = Modifier.weight(1f), recordItem = allRecord)
+                    2 -> AchievementItem(modifier = Modifier.weight(1f), achievementItem = achievement)
                 }
                 Spacer(modifier = Modifier.height(20.dp))
                 Text(

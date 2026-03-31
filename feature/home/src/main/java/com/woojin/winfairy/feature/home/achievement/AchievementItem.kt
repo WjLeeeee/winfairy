@@ -6,12 +6,13 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import com.woojin.winfairy.core.model.AchievementStatus
 import com.woojin.winfairy.core.model.GameRecord
 
 @Composable
 fun AchievementItem(
     modifier: Modifier = Modifier,
-    recordItem: List<GameRecord>
+    achievementItem: List<AchievementStatus>
 ) {
     var showTimeline by remember { mutableStateOf(false) }
 
@@ -22,6 +23,7 @@ fun AchievementItem(
     } else {
         AchievementList(
             modifier = modifier,
+            achievementItem = achievementItem,
             onTimelineClick = { showTimeline = true }
         )
     }

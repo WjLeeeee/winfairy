@@ -3,11 +3,13 @@ package com.woojin.winfairy.feature.home
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.woojin.winfairy.core.domain.usecase.AnalyzeAllVariablesUseCase
+import com.woojin.winfairy.core.domain.usecase.CheckAchievementsUseCase
 import com.woojin.winfairy.core.domain.usecase.DeleteGameRecordUseCase
 import com.woojin.winfairy.core.domain.usecase.GetAllRecordUseCase
 import com.woojin.winfairy.core.domain.usecase.GetAllRecordsWithVariablesUseCase
 import com.woojin.winfairy.core.domain.usecase.GetTierUseCase
 import com.woojin.winfairy.core.domain.usecase.GetWinRateUseCase
+import com.woojin.winfairy.core.model.AchievementStatus
 import com.woojin.winfairy.core.model.GameRecord
 import com.woojin.winfairy.core.model.GameResult
 import com.woojin.winfairy.core.model.VariableWinRate
@@ -27,6 +29,7 @@ class HomeViewModel @Inject constructor(
     private val deleteGameRecord: DeleteGameRecordUseCase,
     private val getAllRecordsWithVariables: GetAllRecordsWithVariablesUseCase,
     private val analyzeAllVariables: AnalyzeAllVariablesUseCase,
+    private val checkAchievements: CheckAchievementsUseCase,
 ) : ViewModel() {
     private val _allRecord = MutableStateFlow<List<GameRecord>>(emptyList())
     val allRecord = _allRecord.asStateFlow()
@@ -34,70 +37,14 @@ class HomeViewModel @Inject constructor(
     private val _analysisResult = MutableStateFlow<List<VariableWinRate>>(emptyList())
     val analysisResult = _analysisResult.asStateFlow()
 
+    private val _achievements = MutableStateFlow<List<AchievementStatus>>(emptyList())
+    val achievements = _achievements.asStateFlow()
+
     private val _winRate = MutableStateFlow(0f)
     val winRate = _winRate.asStateFlow()
 
     private val _tier = MutableStateFlow(WinTier.BASEBALL_GOD)
     val tier = _tier.asStateFlow()
-
-    val tempRecord = listOf(
-        GameRecord(
-            id = 0,
-            date = "2026-03-14",
-            opponentTeam = "두산",
-            stadium = "잠실",
-            result = GameResult.CANCELED,
-            memo = ""
-        ),
-        GameRecord(
-            id = 0,
-            date = "2026-03-15",
-            opponentTeam = "두산",
-            stadium = "잠실",
-            result = GameResult.CANCELED,
-            memo = ""
-        ),
-        GameRecord(
-            id = 0,
-            date = "2026-03-16",
-            opponentTeam = "삼성",
-            stadium = "대구",
-            result = GameResult.WIN,
-            memo = ""
-        ),
-        GameRecord(
-            id = 0,
-            date = "2026-03-17",
-            opponentTeam = "삼성",
-            stadium = "대구",
-            result = GameResult.WIN,
-            memo = ""
-        ),
-        GameRecord(
-            id = 0,
-            date = "2026-03-18",
-            opponentTeam = "NC",
-            stadium = "창원",
-            result = GameResult.DRAW,
-            memo = ""
-        ),
-        GameRecord(
-            id = 0,
-            date = "2026-03-19",
-            opponentTeam = "LG",
-            stadium = "잠실야구장",
-            result = GameResult.WIN,
-            memo = ""
-        ),
-        GameRecord(
-            id = 0,
-            date = "2026-03-20",
-            opponentTeam = "한화",
-            stadium = "대전볼파크",
-            result = GameResult.LOSE,
-            memo = ""
-        )
-    )
 
     init {
         viewModelScope.launch {
@@ -114,6 +61,11 @@ class HomeViewModel @Inject constructor(
                     analyzeAllVariables(
                         records = recordsWithVars,
                         isKorean = Locale.getDefault().language == "ko"
+                    )
+                _achievements.value =
+                    checkAchievements(
+                        records = recordsWithVars,
+                        tier = _tier.value
                     )
             }
         }
