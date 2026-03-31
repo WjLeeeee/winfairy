@@ -5,6 +5,7 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
@@ -15,8 +16,10 @@ import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBackIos
 import androidx.compose.material3.Icon
@@ -32,18 +35,20 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.woojin.winfairy.core.model.Achievement
+import com.woojin.winfairy.core.model.AchievementStatus
 import com.woojin.winfairy.feature.home.R
 import java.util.Locale
 
 @Composable
 fun AchievementTimeline(
     onBack: () -> Unit,
+    achievementItem: List<AchievementStatus>,
 ) {
+    val scrollState = rememberScrollState()
     val isKorean = Locale.getDefault().language == "ko"
     val primary = MaterialTheme.colorScheme.primary
-    // TODO: 실제 달성 데이터 연결
-    val achieved = listOf(Achievement.GAME_1, Achievement.WIN_STREAK_3)
-    val notAchieved = Achievement.entries.filter { it !in achieved }
+    val achieved = achievementItem.filter { it.isAchieved }
+    val notAchieved = achievementItem.filter { !it.isAchieved }
     val total = Achievement.entries.size
 
     Column(
@@ -109,9 +114,17 @@ fun AchievementTimeline(
         Spacer(modifier = Modifier.height(18.dp))
 
         // 타임라인
-        Column(modifier = Modifier.padding(start = 28.dp)) {
-            achieved.forEachIndexed { index, achievement ->
-                Row(modifier = Modifier.fillMaxWidth()) {
+        Column(
+            modifier = Modifier
+                .padding(start = 12.dp, bottom = 12.dp)
+                .verticalScroll(scrollState)
+        ) {
+            achieved.forEachIndexed { index, status ->
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(IntrinsicSize.Min)
+                ) {
                     // 타임라인 도트 + 라인
                     Box(modifier = Modifier.width(28.dp)) {
                         if (index < achieved.lastIndex || notAchieved.isNotEmpty()) {
@@ -134,7 +147,7 @@ fun AchievementTimeline(
                     }
                     Column(modifier = Modifier.padding(bottom = 22.dp)) {
                         Text(
-                            text = "2026.03.01", // TODO: 실제 달성 날짜
+                            text = status.achievedDate ?: "",
                             fontSize = 10.sp,
                             color = primary
                         )
@@ -148,15 +161,15 @@ fun AchievementTimeline(
                             verticalAlignment = Alignment.CenterVertically,
                             horizontalArrangement = Arrangement.spacedBy(8.dp)
                         ) {
-                            Text(text = achievement.emoji, fontSize = 18.sp)
+                            Text(text = status.achievement.emoji, fontSize = 18.sp)
                             Column {
                                 Text(
-                                    text = if (isKorean) achievement.nameKo else achievement.nameEn,
+                                    text = if (isKorean) status.achievement.nameKo else status.achievement.nameEn,
                                     fontSize = 13.sp,
                                     color = MaterialTheme.colorScheme.onBackground
                                 )
                                 Text(
-                                    text = if (isKorean) achievement.descriptionKo else achievement.descriptionEn,
+                                    text = if (isKorean) status.achievement.descriptionKo else status.achievement.descriptionEn,
                                     fontSize = 10.sp,
                                     color = MaterialTheme.colorScheme.onSurfaceVariant
                                 )
@@ -200,12 +213,12 @@ fun AchievementTimeline(
                             Text(text = "🔒", fontSize = 18.sp)
                             Column {
                                 Text(
-                                    text = if (isKorean) next.nameKo else next.nameEn,
+                                    text = if (isKorean) next.achievement.nameKo else next.achievement.nameEn,
                                     fontSize = 13.sp,
                                     color = MaterialTheme.colorScheme.onBackground
                                 )
                                 Text(
-                                    text = if (isKorean) next.descriptionKo else next.descriptionEn,
+                                    text = "${if (isKorean) next.achievement.descriptionKo else next.achievement.descriptionEn} (${next.currentProgress}/${next.achievement.maxProgress})",
                                     fontSize = 10.sp,
                                     color = MaterialTheme.colorScheme.onSurfaceVariant
                                 )

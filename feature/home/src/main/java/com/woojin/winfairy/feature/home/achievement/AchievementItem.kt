@@ -7,7 +7,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import com.woojin.winfairy.core.model.AchievementStatus
-import com.woojin.winfairy.core.model.GameRecord
 
 @Composable
 fun AchievementItem(
@@ -18,7 +17,8 @@ fun AchievementItem(
 
     if (showTimeline) {
         AchievementTimeline(
-            onBack = { showTimeline = false }
+            onBack = { showTimeline = false },
+            achievementItem = achievementItem,
         )
     } else {
         AchievementList(
