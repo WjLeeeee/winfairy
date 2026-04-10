@@ -67,31 +67,38 @@ class MainActivity : ComponentActivity() {
                         }
                     }
                     composable<Home> {
-                        HomeScreen(
-                            selectedTeam = selectedTeam!!, //null 이면 Onboarding 화면 으로 이동 되기 때문에 !!처리
-                            onComplete = {
-                                navController.navigate(AddRecord)
-                            },
-                            onEditRecord = { recordId ->
-                                navController.navigate(EditRecord(recordId))
-                            }
-                        )
+                        selectedTeam?.let { team ->
+                            HomeScreen(
+                                selectedTeam = team,
+                                onComplete = {
+                                    navController.navigate(AddRecord)
+                                },
+                                onEditRecord = { recordId ->
+                                    navController.navigate(EditRecord(recordId))
+                                }
+                            )
+                        }
                     }
                     composable<AddRecord> {
-                        AddRecordScreen(
-                            selectedTeam = selectedTeam!!,
-                            onComplete = {
-                                navController.popBackStack()
-                            }
-                        )
+                        selectedTeam?.let { team ->
+                            AddRecordScreen(
+                                selectedTeam = team,
+                                onComplete = {
+                                    navController.popBackStack()
+                                }
+                            )
+                        }
+
                     }
                     composable<EditRecord> { backStackEntry ->
-                        val editRecord = backStackEntry.toRoute<EditRecord>()
-                        AddRecordScreen(
-                            selectedTeam = selectedTeam!!,
-                            recordId = editRecord.recordId,
-                            onComplete = { navController.popBackStack() }
-                        )
+                        selectedTeam?.let { team ->
+                            val editRecord = backStackEntry.toRoute<EditRecord>()
+                            AddRecordScreen(
+                                selectedTeam = team,
+                                recordId = editRecord.recordId,
+                                onComplete = { navController.popBackStack() }
+                            )
+                        }
                     }
                 }
             }
