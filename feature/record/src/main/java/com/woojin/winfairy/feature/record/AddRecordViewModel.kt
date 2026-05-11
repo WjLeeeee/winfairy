@@ -3,6 +3,7 @@ package com.woojin.winfairy.feature.record
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.woojin.winfairy.core.domain.usecase.AddGameRecordUseCase
+import com.woojin.winfairy.core.domain.usecase.GetDistinctVariableValuesUseCase
 import com.woojin.winfairy.core.domain.usecase.GetRecordByIdUseCase
 import com.woojin.winfairy.core.domain.usecase.GetVariablesByRecordIdUseCase
 import com.woojin.winfairy.core.domain.usecase.UpdateGameRecordUseCase
@@ -25,10 +26,14 @@ class AddRecordViewModel @Inject constructor(
     private val updateGameRecordUseCase: UpdateGameRecordUseCase,
     private val getRecordByIdUseCase: GetRecordByIdUseCase,
     private val getVariablesByRecordIdUseCase: GetVariablesByRecordIdUseCase,
+    private val getDistinctVariableValuesUseCase: GetDistinctVariableValuesUseCase,
 ) : ViewModel() {
 
     private val _recordData = MutableStateFlow(RecordData())
     val recordData: StateFlow<RecordData> = _recordData.asStateFlow()
+
+    private val _suggestions = MutableStateFlow<Map<String, List<String>>>(emptyMap())
+    val suggestions: StateFlow<Map<String, List<String>>> = _suggestions.asStateFlow()
 
     private var isEditMode = false
     private var editRecordId: Long = 0
@@ -55,6 +60,44 @@ class AddRecordViewModel @Inject constructor(
                             value = ""
                         )
                     }
+                }
+            )
+        }
+    }
+
+    fun loadSuggestions() {
+        viewModelScope.launch {
+            val result = mutableMapOf<String, List<String>>()
+            VariableCategory.entries.forEach { category ->
+                val values = getDistinctVariableValuesUseCase(category.displayName)
+                result[category.displayName] = values
+                // 영어도
+                val valuesEn = getDistinctVariableValuesUseCase(category.displayNameEn)
+                result[category.displayNameEn] = valuesEn
+            }
+            _suggestions.value = result
+        }
+    }
+
+    fun addVariableValue(index: Int, value: String) {
+        _recordData.update { data ->
+            data.copy(
+                variables = data.variables.toMutableList().apply {
+                    val current = this[index]
+                    if (value !in current.values) {
+                        this[index] = current.copy(values = current.values + value)
+                    }
+                }
+            )
+        }
+    }
+
+    fun removeVariableValue(index: Int, value: String) {
+        _recordData.update { data ->
+            data.copy(
+                variables = data.variables.toMutableList().apply {
+                    val current = this[index]
+                    this[index] = current.copy(values = current.values - value)
                 }
             )
         }
@@ -112,9 +155,15 @@ class AddRecordViewModel @Inject constructor(
                 result = data.gameResult,
                 memo = ""
             )
-            val variables = data.variables
-                .filter { it.value.isNotBlank() }
-                .map { GameVariable(category = it.category, value = it.value) }
+            val variables = data.variables.flatMap { variable ->
+                if (variable.isMultiple) {
+                    variable.values.map { GameVariable(category = variable.category, value = it) }
+                } else {
+                    if (variable.value.isNotBlank()) {
+                        listOf(GameVariable(category = variable.category, value = variable.value))
+                    } else emptyList()
+                }
+            }
             if (isEditMode) {
                 updateGameRecordUseCase(record, variables)
             } else {

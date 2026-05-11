@@ -15,13 +15,13 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
+import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBackIos
@@ -56,7 +56,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.dp
@@ -83,6 +82,7 @@ fun AddRecordScreen(
     val scrollState = rememberScrollState()
 
     val recordData by viewModel.recordData.collectAsState()
+    val suggestions by viewModel.suggestions.collectAsState()
 
     LaunchedEffect(Unit) {
         if (recordId != null) {
@@ -93,11 +93,10 @@ fun AddRecordScreen(
                 stadium = if (isKorean) selectedTeam.stadium else selectedTeam.stadiumEn
             )
         }
+        viewModel.loadSuggestions()
     }
 
-    Scaffold(
-        modifier = Modifier.fillMaxSize()
-    ) { innerPadding ->
+    Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
         Column(
             modifier = Modifier
                 .fillMaxSize()
@@ -152,10 +151,15 @@ fun AddRecordScreen(
             ) {
                 VariableRecord(
                     variables = recordData.variables,
+                    suggestions = suggestions,
                     onVariableChange = { index, value ->
-                        viewModel.updateVariable(
-                            index = index, value = value
-                        )
+                        viewModel.updateVariable(index = index, value = value)
+                    },
+                    onVariableAdd = { index, value ->
+                        viewModel.addVariableValue(index = index, value = value)
+                    },
+                    onVariableRemove = { index, value ->
+                        viewModel.removeVariableValue(index = index, value = value)
                     }
                 )
             }
@@ -493,7 +497,10 @@ fun GameResultSelector(
 @Composable
 fun VariableRecord(
     variables: List<VariableInput>,
+    suggestions: Map<String, List<String>>,
     onVariableChange: (Int, String) -> Unit,
+    onVariableAdd: (Int, String) -> Unit,
+    onVariableRemove: (Int, String) -> Unit,
 ) {
     Column(
         modifier = Modifier.fillMaxWidth(),
@@ -503,7 +510,7 @@ fun VariableRecord(
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.spacedBy(8.dp),
-                verticalAlignment = Alignment.CenterVertically
+                verticalAlignment = Alignment.Top
             ) {
                 Box(
                     modifier = Modifier
@@ -519,31 +526,24 @@ fun VariableRecord(
                         color = Color(0xFF999999)
                     )
                 }
-                BasicTextField(
-                    value = variable.value,
-                    onValueChange = { onVariableChange(index, it) },
-                    modifier = Modifier
-                        .weight(1f)
-                        .clip(RoundedCornerShape(10.dp))
-                        .background(Color.White)
-                        .padding(12.dp, 8.dp),
-                    textStyle = TextStyle(
-                        fontSize = 13.sp,
-                        color = MaterialTheme.colorScheme.onBackground
-                    ),
-                    decorationBox = { innerTextField ->
-                        Box(contentAlignment = Alignment.CenterStart) {
-                            if (variable.value.isEmpty()) {
-                                Text(
-                                    text = stringResource(R.string.input_variable_text_field, variable.category),
-                                    fontSize = 13.sp,
-                                    color = Color(0xFFCCCCCC)
-                                )
-                            }
-                            innerTextField()
-                        }
-                    }
-                )
+                if (variable.isMultiple) {
+                    MultipleVariableInput(
+                        category = variable.category,
+                        values = variable.values,
+                        suggestions = suggestions[variable.category] ?: emptyList(),
+                        onAdd = { onVariableAdd(index, it) },
+                        onRemove = { onVariableRemove(index, it) },
+                    )
+                } else {
+                    // 기존 단일 입력 (좌석, 유니폼)
+                    SingleVariableInput(
+                        category = variable.category,
+                        value = variable.value,
+                        suggestions = suggestions[variable.category] ?: emptyList(),
+                        onValueChange = { onVariableChange(index, it) },
+                        modifier = Modifier.weight(1f)
+                    )
+                }
             }
         }
     }

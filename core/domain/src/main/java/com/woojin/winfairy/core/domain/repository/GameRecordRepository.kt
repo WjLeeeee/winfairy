@@ -13,4 +13,5 @@ interface GameRecordRepository {
     suspend fun updateRecord(record: GameRecord, variables: List<GameVariable>) //기록 수정 에서 사용
     suspend fun deleteRecord(recordId: Long) //기록 삭제
     fun getAllRecordsWithVariablesFlow(): Flow<List<GameRecordWithVariables>> //분석 에서 사용, 모든 경기와 경기별 변수 함께 collect
+    suspend fun getDistinctVariableValues(category: String): List<String>
 }

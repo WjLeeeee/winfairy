@@ -16,4 +16,7 @@ interface GameVariableDao {
 
     @Query("DELETE FROM game_variable WHERE gameRecordId = :gameRecordId")
     suspend fun deleteVariablesByRecordId(gameRecordId: Long)
+
+    @Query("SELECT DISTINCT value FROM game_variable WHERE category = :category")
+    suspend fun getDistinctValuesByCategory(category: String): List<String>
 }

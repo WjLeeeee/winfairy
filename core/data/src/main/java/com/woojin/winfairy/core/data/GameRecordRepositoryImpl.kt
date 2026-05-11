@@ -69,4 +69,7 @@ class GameRecordRepositoryImpl @Inject constructor(
             }
         }
     }
+    override suspend fun getDistinctVariableValues(category: String): List<String> {
+        return gameVariableDao.getDistinctValuesByCategory(category)
+    }
 }
