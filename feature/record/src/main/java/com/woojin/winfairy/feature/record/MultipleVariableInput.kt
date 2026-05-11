@@ -47,7 +47,8 @@ fun MultipleVariableInput(
     var isFocused by remember { mutableStateOf(false) }
     val filteredSuggestions = suggestions
         .filter { it !in values }
-        .filter { text.isEmpty() || it.contains(text, ignoreCase = true) }
+        .filter { text.isNotEmpty() && it.contains(text, ignoreCase = true) }
+        .take(3)
 
     Column {
         // 추가된 칩들
@@ -120,7 +121,7 @@ fun MultipleVariableInput(
             }
         )
         // 자동완성 드롭다운
-        if (isFocused && filteredSuggestions.isNotEmpty()) {
+        if (isFocused && filteredSuggestions.isNotEmpty() && text.isNotEmpty()) {
             Column(
                 modifier = Modifier
                     .fillMaxWidth()

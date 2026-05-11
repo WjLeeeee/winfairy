@@ -35,8 +35,9 @@ fun SingleVariableInput(
 ) {
     var isFocused by remember { mutableStateOf(false) }
     val filteredSuggestions = suggestions
-        .filter { value.isEmpty() || it.contains(value, ignoreCase = true) }
+        .filter { value.isNotEmpty() && it.contains(value, ignoreCase = true) }
         .filter { it != value }
+        .take(3)
 
     Column(modifier = modifier) {
         BasicTextField(
@@ -66,7 +67,7 @@ fun SingleVariableInput(
                 }
             }
         )
-        if (isFocused && filteredSuggestions.isNotEmpty()) {
+        if (isFocused && filteredSuggestions.isNotEmpty() && value.isNotEmpty()) {
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
