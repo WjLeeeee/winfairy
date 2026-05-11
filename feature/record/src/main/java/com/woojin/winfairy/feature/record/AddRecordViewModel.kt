@@ -51,15 +51,15 @@ class AddRecordViewModel @Inject constructor(
                 selectedEnemy = KboTeam.entries.find { it.name == record.opponentTeam },
                 selectedStadium = record.stadium,
                 gameResult = record.result,
-                variables = if (variables.isNotEmpty()) {
-                    variables.map { VariableInput(it.category, it.value) }
-                } else {
-                    VariableCategory.entries.map {
-                        VariableInput(
-                            category = if (isKorean) it.displayName else it.displayNameEn,
-                            value = ""
-                        )
-                    }
+                variables = VariableCategory.entries.map { category ->
+                    val categoryName = if (isKorean) category.displayName else category.displayNameEn
+                    val categoryValues = variables.filter { it.category == categoryName }
+                    VariableInput(
+                        category = categoryName,
+                        value = if (!category.isMultiple) categoryValues.firstOrNull()?.value ?: "" else "",
+                        values = if (category.isMultiple) categoryValues.map { it.value } else emptyList(),
+                        isMultiple = category.isMultiple
+                    )
                 }
             )
         }
@@ -110,7 +110,8 @@ class AddRecordViewModel @Inject constructor(
                     variables = VariableCategory.entries.map { category ->
                         VariableInput(
                             category = if (isKorean) category.displayName else category.displayNameEn,
-                            value = ""
+                            value = "",
+                            isMultiple = category.isMultiple
                         )
                     }
                 )
