@@ -32,6 +32,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalLocale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
@@ -46,7 +47,6 @@ import com.woojin.winfairy.core.ui.iconRes
 import com.woojin.winfairy.feature.home.achievement.AchievementItem
 import com.woojin.winfairy.feature.home.analysis.AnalysisItem
 import com.woojin.winfairy.feature.home.record.RecordItem
-import java.util.Locale
 
 @Composable
 fun HomeScreen(
@@ -106,7 +106,8 @@ fun HomeScreen(
                         modifier = Modifier.weight(1f),
                         recordItem = allRecord,
                         onItemClick = { recordId -> onEditRecord(recordId) },
-                        onDelete = { recordId -> homeViewModel.deleteRecord(recordId) }
+                        onDelete = { recordId -> homeViewModel.deleteRecord(recordId) },
+                        myTeam = selectedTeam,
                     )
                     1 -> AnalysisItem(modifier = Modifier.weight(1f), gameCount = allRecord.size, analysisResult = analysisResult)
                     2 -> AchievementItem(modifier = Modifier.weight(1f), achievementItem = achievement)
@@ -138,7 +139,7 @@ fun HeaderLayout(
     winRate: Float,
     tier: WinTier,
 ) {
-    val isKorean = Locale.getDefault().language == "ko"
+    val isKorean = LocalLocale.current.platformLocale.language == "ko"
 
     val wins = allRecord.count { it.result == GameResult.WIN }
     val draws = allRecord.count { it.result == GameResult.DRAW }
