@@ -34,6 +34,7 @@ import com.woojin.winfairy.core.model.Achievement
 import com.woojin.winfairy.core.model.AchievementStatus
 import com.woojin.winfairy.feature.home.R
 import java.util.Locale
+import androidx.compose.ui.platform.LocalLocale
 
 @Composable
 fun AchievementList(
@@ -41,7 +42,7 @@ fun AchievementList(
     achievementItem: List<AchievementStatus>,
     onTimelineClick: () -> Unit,
 ) {
-    val isKorean = Locale.getDefault().language == "ko"
+    val isKorean = LocalLocale.current.platformLocale.language == "ko"
     val achieved = achievementItem.filter { it.isAchieved }
     val notAchieved = achievementItem.filter { !it.isAchieved }
     val total = Achievement.entries.size
@@ -238,7 +239,7 @@ fun AchievementList(
                             }
 
                             Text(
-                                text = "0/${status.achievement.maxProgress}",
+                                text = "${status.currentProgress}/${status.achievement.maxProgress}",
                                 fontSize = 10.sp,
                                 color = MaterialTheme.colorScheme.onSurfaceVariant
                             )
