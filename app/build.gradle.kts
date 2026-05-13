@@ -73,12 +73,15 @@ dependencies {
 
     //java.time 사용을 위해
     coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:2.1.4")
+    //SplashScreen
+    implementation(libs.androidx.core.splashscreen)
 
     implementation(project(":core:designsystem"))
     implementation(project(":core:navigation"))
     implementation(project(":core:model"))
     implementation(project(":core:domain"))
     implementation(project(":core:data")) //직접 사용 X, Hilt 사용으로 인해 RepositoryModule 알기만 함.
+    implementation(project(":core:ui"))
     implementation(project(":feature:onboarding"))
     implementation(project(":feature:home"))
     implementation(project(":feature:record"))

@@ -8,6 +8,10 @@ import androidx.activity.enableEdgeToEdge
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
+import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -19,22 +23,42 @@ import com.woojin.winfairy.core.navigation.AddRecord
 import com.woojin.winfairy.core.navigation.EditRecord
 import com.woojin.winfairy.core.navigation.Home
 import com.woojin.winfairy.core.navigation.Onboarding
+import com.woojin.winfairy.core.ui.mascot
 import com.woojin.winfairy.feature.home.HomeScreen
 import com.woojin.winfairy.feature.onboarding.OnboardingScreen
 import com.woojin.winfairy.feature.record.AddRecordScreen
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.delay
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
+        val splashScreen = installSplashScreen()
         enableEdgeToEdge()
         super.onCreate(savedInstanceState)
+        splashScreen.setKeepOnScreenCondition { true }
         setContent {
             val viewModel: MainViewModel = hiltViewModel()
             val selectedTeam by viewModel.selectedTeam.collectAsState()
             val isLoading by viewModel.isLoading.collectAsState()
-
+            var showSplash by remember { mutableStateOf(true) }
+            // 로딩 끝나면 시스템 Splash 제거
+            LaunchedEffect(isLoading) {
+                if (!isLoading) {
+                    splashScreen.setKeepOnScreenCondition { false }
+                }
+            }
             if (isLoading) return@setContent
+            LaunchedEffect(selectedTeam) {
+                if (selectedTeam != null) {
+                    delay(1500)
+                }
+                showSplash = false
+            }
+            if (showSplash && selectedTeam != null) {
+                SplashScreen(myTeam = selectedTeam!!)
+                return@setContent
+            }
 
             val navController = rememberNavController()
             val navBackStackEntry by navController.currentBackStackEntryAsState()
@@ -49,6 +73,7 @@ class MainActivity : ComponentActivity() {
                                 android.graphics.Color.TRANSPARENT
                             )
                         }
+
                         else -> SystemBarStyle.dark(android.graphics.Color.TRANSPARENT)
                     }
                 )
