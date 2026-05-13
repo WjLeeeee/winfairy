@@ -40,6 +40,7 @@ import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SelectableDates
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.rememberDatePickerState
@@ -72,6 +73,7 @@ import java.time.ZoneOffset
 import java.time.format.DateTimeFormatter
 import java.util.Locale
 import kotlin.time.ExperimentalTime
+import androidx.compose.ui.platform.LocalLocale
 
 @Composable
 fun AddRecordScreen(
@@ -81,7 +83,7 @@ fun AddRecordScreen(
     viewModel: AddRecordViewModel = hiltViewModel()
 ) {
     val context = LocalContext.current
-    val isKorean = Locale.getDefault().language == "ko"
+    val isKorean = LocalLocale.current.platformLocale.language == "ko"
     val scrollState = rememberScrollState()
 
     val imeBottom = WindowInsets.ime.getBottom(LocalDensity.current)
@@ -289,7 +291,13 @@ fun DateLayout(
             initialSelectedDateMillis = date
                 .atStartOfDay(ZoneOffset.UTC)
                 .toInstant()
-                .toEpochMilli()
+                .toEpochMilli(),
+            selectableDates = object : SelectableDates {
+                override fun isSelectableDate(utcTimeMillis: Long): Boolean {
+                    val today = LocalDate.now().atStartOfDay(ZoneOffset.UTC).toInstant().toEpochMilli()
+                    return utcTimeMillis <= today
+                }
+            }
         )
         DatePickerDialog(
             onDismissRequest = { showDatePicker = false },
@@ -326,7 +334,7 @@ fun EnemyTeam(
     selectedEnemyTeam: KboTeam?,
     onSelected: (KboTeam) -> Unit,
 ) {
-    val isKorean = Locale.getDefault().language == "ko"
+    val isKorean = LocalLocale.current.platformLocale.language == "ko"
 
     FlowRow(
         modifier = Modifier.fillMaxWidth(),
@@ -360,7 +368,7 @@ fun Stadium(
     selectedStadium: String,
     onSelect: (KboTeam) -> Unit,
 ) {
-    val isKorean = Locale.getDefault().language == "ko"
+    val isKorean = LocalLocale.current.platformLocale.language == "ko"
     var expanded by remember { mutableStateOf(false) }
     val myTeamStadium = if (isKorean) myTeam.stadium else myTeam.stadiumEn
 
