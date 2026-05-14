@@ -50,10 +50,7 @@ fun UpcomingGameActionBottomSheet(
             dragHandle = { BottomSheetDefaults.DragHandle() }
         ) {
             Column(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 20.dp)
-                    .padding(bottom = 40.dp)
+                modifier = Modifier.fillMaxWidth()
             ) {
                 ActionItem(
                     iconRes = Icons.Default.Edit,
@@ -92,7 +89,7 @@ private fun ActionItem(
         modifier = Modifier
             .fillMaxWidth()
             .clickable { onClick() }
-            .padding(vertical = 16.dp),
+            .padding(vertical = 16.dp, horizontal = 20.dp),
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(12.dp)
     ) {
