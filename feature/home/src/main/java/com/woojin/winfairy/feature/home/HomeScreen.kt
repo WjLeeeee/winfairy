@@ -111,7 +111,8 @@ fun HomeScreen(
                     upcomingGames = upComingGameList,
                     myTeam = selectedTeam,
                     onAddClick = { planVisitBottomSheet = true },
-                    deleteItem = { id -> homeViewModel.deleteUpComingGame(id) }
+                    deleteItem = { id -> homeViewModel.deleteUpComingGame(id) },
+                    recordItem = { id -> homeViewModel.recordItem(id) },
                 )
                 Spacer(modifier = Modifier.height(12.dp))
                 HomeMainTab(

@@ -18,8 +18,6 @@
     <string name="cancel">취소</string>
     <string name="delete_record_dialog_title">기록 삭제</string>
     <string name="delete_record_dialog_description">이 직관 기록을 삭제할까요?</string>
-    <string name="delete_up_coming_dialog_title">예정 기록 삭제</string>
-    <string name="delete_up_coming_dialog_description">이 직관 예정을 삭제할까요?</string>
     <string name="elimination">삭제</string>
     <string name="need_more_records_title">분석 표본이 부족해요</string>
     <string name="need_more_records_description">직관 기록을 3경기 이상 추가하면\n승률 분석을 확인할 수 있어요!</string>
@@ -39,4 +37,8 @@
     <string name="stadium">구장</string>
     <string name="regis_up_comming_game">⚾️ 직관 예정 등록</string>
     <string name="registered">등록되었습니다.</string>
+    <string name="up_coming_game_record">경기 결과 기록하기</string>
+    <string name="up_coming_game_record_content">직관을 마쳤나요? 결과를 기록해보세요</string>
+    <string name="up_coming_game_delete">예정 경기 삭제</string>
+    <string name="up_coming_game_delete_content">직관 계획이 취소됐나요?</string>
 </resources>

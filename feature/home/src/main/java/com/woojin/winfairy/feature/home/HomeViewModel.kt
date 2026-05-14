@@ -105,4 +105,9 @@ class HomeViewModel @Inject constructor(
             deleteUpComingGameUseCase(id)
         }
     }
+
+    /** 직관 예정 경기 결과를 기록 */
+    fun recordItem(id: Long) {
+
+    }
 }

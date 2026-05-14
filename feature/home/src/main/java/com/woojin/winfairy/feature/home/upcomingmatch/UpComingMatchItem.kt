@@ -61,6 +61,7 @@ fun UpComingMatchItem(
     myTeam: KboTeam,
     onAddClick: () -> Unit = {},
     deleteItem: (Long) -> Unit = {},
+    recordItem: (Long) -> Unit = {},
 ) {
     var isExpanded by remember { mutableStateOf(false) }
     LaunchedEffect(upcomingGames) {
@@ -161,7 +162,8 @@ fun UpComingMatchItem(
                     UpcomingGameItem(
                         game = game,
                         myTeam = myTeam,
-                        deleteItem = { id -> deleteItem(id) }
+                        deleteItem = { id -> deleteItem(id) },
+                        recordItem = { id -> recordItem(id) },
                     )
                 }
             }
@@ -174,9 +176,10 @@ fun UpcomingGameItem(
     game: UpcomingGame,
     myTeam: KboTeam,
     deleteItem: (Long) -> Unit,
+    recordItem: (Long) -> Unit,
 ) {
     val isKorean = LocalLocale.current.platformLocale.language == "ko"
-    var showDeleteDialog by remember { mutableStateOf<Long?>(null) }
+    var showActionBottomSheet by remember { mutableStateOf(false) }
 
     val enemyTeam = KboTeam.entries.find { it.name == game.opponentTeam }
     val dDay = remember(game.date) {
@@ -213,10 +216,7 @@ fun UpcomingGameItem(
                 shape = RoundedCornerShape(10.dp)
             )
             .background(Color(0xffFFF9F2))
-            .combinedClickable(
-                onClick = {},
-                onLongClick = { showDeleteDialog = game.id }
-            )
+            .clickable { showActionBottomSheet = true }
             .padding(12.dp)
     ) {
         // 상단: 예정 태그 + 날짜
@@ -333,38 +333,19 @@ fun UpcomingGameItem(
             }
         }
     }
-    showDeleteDialog?.let { id ->
-        AlertDialog(
-            onDismissRequest = { showDeleteDialog = null },
-            title = {
-                Text(
-                    text = stringResource(R.string.delete_up_coming_dialog_title),
-                    color = Color.Black
-                )
-            },
-            text = {
-                Text(
-                    text = stringResource(R.string.delete_up_coming_dialog_description),
-                    color = Color.Black
-                )
-            },
-            confirmButton = {
-                TextButton(
-                    onClick = {
-                        deleteItem(id)
-                        showDeleteDialog = null
-                    }
-                ) {
-                    Text(stringResource(R.string.elimination), color = Color(0xFFE24B4A))
-                }
-            },
-            dismissButton = {
-                TextButton(onClick = { showDeleteDialog = null }) {
-                    Text(stringResource(R.string.cancel), color = Color.Black)
-                }
-            }
-        )
-    }
+
+    UpcomingGameActionBottomSheet(
+        isShow = showActionBottomSheet,
+        onDismiss = { showActionBottomSheet = false },
+        onDelete = {
+            showActionBottomSheet = false
+            deleteItem(game.id)
+        },
+        onRecord = {
+            showActionBottomSheet = false
+            recordItem(game.id)
+        },
+    )
 }
 
 @Composable
