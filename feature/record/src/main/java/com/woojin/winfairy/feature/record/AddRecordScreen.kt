@@ -79,6 +79,7 @@ import androidx.compose.ui.platform.LocalLocale
 fun AddRecordScreen(
     onComplete: () -> Unit,
     selectedTeam: KboTeam,
+    upComingGameId: Long? = null, //예정 경기 등록 시 사용
     recordId: Long? = null, // 수정 에서만 사용
     viewModel: AddRecordViewModel = hiltViewModel()
 ) {
@@ -98,13 +99,15 @@ fun AddRecordScreen(
     val suggestions by viewModel.suggestions.collectAsState()
 
     LaunchedEffect(Unit) {
-        if (recordId != null) {
-            viewModel.loadRecord(recordId, isKorean)
-        } else {
-            viewModel.initVariables(isKorean)
-            viewModel.updateRecordData(
-                stadium = if (isKorean) selectedTeam.stadium else selectedTeam.stadiumEn
-            )
+        when {
+            recordId != null -> viewModel.loadRecord(recordId, isKorean) //편집 모드
+            upComingGameId != null -> viewModel.loadUpComingData(upComingGameId, isKorean) //예정 경기 저장
+            else -> {
+                viewModel.initVariables(isKorean)
+                viewModel.updateRecordData(
+                    stadium = if (isKorean) selectedTeam.stadium else selectedTeam.stadiumEn
+                )
+            }
         }
         viewModel.loadSuggestions()
     }

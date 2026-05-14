@@ -5,7 +5,7 @@ import androidx.lifecycle.viewModelScope
 import com.woojin.winfairy.core.domain.usecase.AnalyzeAllVariablesUseCase
 import com.woojin.winfairy.core.domain.usecase.CheckAchievementsUseCase
 import com.woojin.winfairy.core.domain.usecase.DeleteGameRecordUseCase
-import com.woojin.winfairy.core.domain.usecase.DeleteUpComingGame
+import com.woojin.winfairy.core.domain.usecase.DeleteUpComingGameUseCase
 import com.woojin.winfairy.core.domain.usecase.GetAllRecordUseCase
 import com.woojin.winfairy.core.domain.usecase.GetAllRecordsWithVariablesUseCase
 import com.woojin.winfairy.core.domain.usecase.GetAllUpComingGameUseCase
@@ -14,7 +14,6 @@ import com.woojin.winfairy.core.domain.usecase.GetWinRateUseCase
 import com.woojin.winfairy.core.domain.usecase.InsertUpComingGame
 import com.woojin.winfairy.core.model.AchievementStatus
 import com.woojin.winfairy.core.model.GameRecord
-import com.woojin.winfairy.core.model.GameResult
 import com.woojin.winfairy.core.model.UpcomingGame
 import com.woojin.winfairy.core.model.VariableWinRate
 import com.woojin.winfairy.core.model.WinTier
@@ -36,7 +35,7 @@ class HomeViewModel @Inject constructor(
     private val checkAchievements: CheckAchievementsUseCase,
     private val getAllUpComingGameUseCase: GetAllUpComingGameUseCase,
     private val insertUpComingGame: InsertUpComingGame,
-    private val deleteUpComingGameUseCase: DeleteUpComingGame,
+    private val deleteUpComingGameUseCase: DeleteUpComingGameUseCase,
 ) : ViewModel() {
     private val _allRecord = MutableStateFlow<List<GameRecord>>(emptyList())
     val allRecord = _allRecord.asStateFlow()
@@ -104,10 +103,5 @@ class HomeViewModel @Inject constructor(
         viewModelScope.launch {
             deleteUpComingGameUseCase(id)
         }
-    }
-
-    /** 직관 예정 경기 결과를 기록 */
-    fun recordItem(id: Long) {
-
     }
 }

@@ -46,6 +46,7 @@ import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import com.woojin.winfairy.core.model.GameRecord
 import com.woojin.winfairy.core.model.GameResult
 import com.woojin.winfairy.core.model.KboTeam
+import com.woojin.winfairy.core.model.UpcomingGame
 import com.woojin.winfairy.core.model.WinTier
 import com.woojin.winfairy.core.ui.iconRes
 import com.woojin.winfairy.feature.home.achievement.AchievementItem
@@ -60,6 +61,7 @@ fun HomeScreen(
     onComplete: () -> Unit,
     onEditRecord: (Long) -> Unit,
     selectedTeam: KboTeam,
+    recordItem: (Long) -> Unit = {},
     homeViewModel: HomeViewModel = hiltViewModel()
 ) {
     val context = LocalContext.current
@@ -112,7 +114,7 @@ fun HomeScreen(
                     myTeam = selectedTeam,
                     onAddClick = { planVisitBottomSheet = true },
                     deleteItem = { id -> homeViewModel.deleteUpComingGame(id) },
-                    recordItem = { id -> homeViewModel.recordItem(id) },
+                    recordItem = { id -> recordItem(id) },
                 )
                 Spacer(modifier = Modifier.height(12.dp))
                 HomeMainTab(

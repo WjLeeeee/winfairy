@@ -3,8 +3,10 @@ package com.woojin.winfairy.feature.record
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.woojin.winfairy.core.domain.usecase.AddGameRecordUseCase
+import com.woojin.winfairy.core.domain.usecase.DeleteUpComingGameUseCase
 import com.woojin.winfairy.core.domain.usecase.GetDistinctVariableValuesUseCase
 import com.woojin.winfairy.core.domain.usecase.GetRecordByIdUseCase
+import com.woojin.winfairy.core.domain.usecase.GetUpComingGameByIdUseCase
 import com.woojin.winfairy.core.domain.usecase.GetVariablesByRecordIdUseCase
 import com.woojin.winfairy.core.domain.usecase.UpdateGameRecordUseCase
 import com.woojin.winfairy.core.model.GameRecord
@@ -27,6 +29,8 @@ class AddRecordViewModel @Inject constructor(
     private val getRecordByIdUseCase: GetRecordByIdUseCase,
     private val getVariablesByRecordIdUseCase: GetVariablesByRecordIdUseCase,
     private val getDistinctVariableValuesUseCase: GetDistinctVariableValuesUseCase,
+    private val getUpComingGameByIdUseCase: GetUpComingGameByIdUseCase,
+    private val deleteUpComingGameUseCase: DeleteUpComingGameUseCase
 ) : ViewModel() {
 
     private val _recordData = MutableStateFlow(RecordData())
@@ -37,6 +41,33 @@ class AddRecordViewModel @Inject constructor(
 
     private var isEditMode = false
     private var editRecordId: Long = 0
+    private var isAddUpComingGame = false
+    private var upComingGameId: Long = 0
+
+    fun loadUpComingData(id: Long,  isKorean: Boolean) {
+        viewModelScope.launch {
+            val upComingData = getUpComingGameByIdUseCase(id)
+            if (upComingData != null) {
+                isAddUpComingGame = true
+                upComingGameId = id
+                _recordData.value = RecordData(
+                    selectedDate = upComingData.date,
+                    selectedEnemy = KboTeam.entries.find { it.name == upComingData.opponentTeam },
+                    selectedStadium = upComingData.stadium,
+                    gameResult = GameResult.WIN,
+                    variables = VariableCategory.entries.map { category ->
+                        val categoryName = if (isKorean) category.displayName else category.displayNameEn
+                        VariableInput(
+                            category = categoryName,
+                            value = "",
+                            values = emptyList(),
+                            isMultiple = category.isMultiple
+                        )
+                    }
+                )
+            }
+        }
+    }
 
     fun loadRecord(recordId: Long, isKorean: Boolean) {
         viewModelScope.launch {
@@ -170,6 +201,11 @@ class AddRecordViewModel @Inject constructor(
             } else {
                 addGameRecordUseCase(record, variables)
             }
+            if (isAddUpComingGame) {
+                //예정 경기 추가 시 예정 경기 리스트 에서 해당 아이템 제거
+                deleteUpComingGameUseCase(upComingGameId)
+            }
+
             onSuccess()
         }
     }

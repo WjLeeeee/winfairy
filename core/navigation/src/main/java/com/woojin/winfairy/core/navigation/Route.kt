@@ -12,4 +12,7 @@ data object Home
 data object AddRecord
 
 @Serializable
+data class UpComingGameRecord(val id: Long? = null)
+
+@Serializable
 data class EditRecord(val recordId: Long)

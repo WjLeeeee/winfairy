@@ -23,6 +23,7 @@ import com.woojin.winfairy.core.navigation.AddRecord
 import com.woojin.winfairy.core.navigation.EditRecord
 import com.woojin.winfairy.core.navigation.Home
 import com.woojin.winfairy.core.navigation.Onboarding
+import com.woojin.winfairy.core.navigation.UpComingGameRecord
 import com.woojin.winfairy.core.ui.mascot
 import com.woojin.winfairy.feature.home.HomeScreen
 import com.woojin.winfairy.feature.onboarding.OnboardingScreen
@@ -101,7 +102,8 @@ class MainActivity : ComponentActivity() {
                                 },
                                 onEditRecord = { recordId ->
                                     navController.navigate(EditRecord(recordId))
-                                }
+                                },
+                                recordItem = { id -> navController.navigate(UpComingGameRecord(id = id)) }
                             )
                         }
                     }
@@ -114,7 +116,18 @@ class MainActivity : ComponentActivity() {
                                 }
                             )
                         }
-
+                    }
+                    composable<UpComingGameRecord> { backStackEntry ->
+                        selectedTeam?.let { team ->
+                            val upComingId = backStackEntry.toRoute<UpComingGameRecord>()
+                            AddRecordScreen(
+                                selectedTeam = team,
+                                upComingGameId = upComingId.id,
+                                onComplete = {
+                                    navController.popBackStack()
+                                }
+                            )
+                        }
                     }
                     composable<EditRecord> { backStackEntry ->
                         selectedTeam?.let { team ->
