@@ -1,5 +1,7 @@
 package com.woojin.winfairy.feature.home
 
+import android.annotation.SuppressLint
+import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -26,12 +28,14 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalLocale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -47,7 +51,10 @@ import com.woojin.winfairy.core.ui.iconRes
 import com.woojin.winfairy.feature.home.achievement.AchievementItem
 import com.woojin.winfairy.feature.home.analysis.AnalysisItem
 import com.woojin.winfairy.feature.home.record.RecordItem
+import com.woojin.winfairy.feature.home.upcomingmatch.AddUpComingMatchBottomSheet
+import com.woojin.winfairy.feature.home.upcomingmatch.UpComingMatchItem
 
+@SuppressLint("LocalContextGetResourceValueCall")
 @Composable
 fun HomeScreen(
     onComplete: () -> Unit,
@@ -55,12 +62,16 @@ fun HomeScreen(
     selectedTeam: KboTeam,
     homeViewModel: HomeViewModel = hiltViewModel()
 ) {
+    val context = LocalContext.current
     val allRecord by homeViewModel.allRecord.collectAsState()
     val winRate by homeViewModel.winRate.collectAsState()
     val tier by homeViewModel.tier.collectAsState()
+    val upComingGameList by homeViewModel.upComingGame.collectAsState()
 
     val analysisResult by homeViewModel.analysisResult.collectAsState()
     val achievement by homeViewModel.achievements.collectAsState()
+
+    var planVisitBottomSheet by remember { mutableStateOf(false) }
 
     var selectedTab by remember { mutableIntStateOf(0) }
     Scaffold(
@@ -96,6 +107,13 @@ fun HomeScreen(
                     .padding(horizontal = 25.dp)
                     .padding(top = if (allRecord.isEmpty()) 20.dp else 0.dp)
             ) {
+                UpComingMatchItem(
+                    upcomingGames = upComingGameList,
+                    myTeam = selectedTeam,
+                    onAddClick = { planVisitBottomSheet = true },
+                    deleteItem = { id -> homeViewModel.deleteUpComingGame(id) }
+                )
+                Spacer(modifier = Modifier.height(12.dp))
                 HomeMainTab(
                     selectedTab = selectedTab,
                     onTabClick = { index -> selectedTab = index }
@@ -128,6 +146,16 @@ fun HomeScreen(
                 Spacer(modifier = Modifier.height(20.dp))
             }
         }
+        AddUpComingMatchBottomSheet(
+            isShow = planVisitBottomSheet,
+            closeBottomSheet = { planVisitBottomSheet = false },
+            myTeam = selectedTeam,
+            registerBtn = { upcomingGame ->
+                homeViewModel.regisUpComingGame(upcomingGame)
+                planVisitBottomSheet = false
+                Toast.makeText(context, context.getString(R.string.registered), Toast.LENGTH_SHORT).show()
+            },
+        )
     }
 }
 

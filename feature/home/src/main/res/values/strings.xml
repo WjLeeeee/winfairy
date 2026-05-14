@@ -28,4 +28,15 @@
     <string name="not_achieved">Not Achieved</string>
     <string name="achievement_timeline">Achievement Timeline</string>
     <string name="next_achievement">Next Achievement?</string>
+    <string name="upcoming_game">upcomming game</string>
+    <string name="collapse">collapse</string>
+    <string name="expand">expand</string>
+    <string name="upcoming">upcomming</string>
+    <string name="date">date</string>
+    <string name="opponent">opponent</string>
+    <string name="stadium">stadium</string>
+    <string name="regis_up_comming_game">⚾️ Regis Intuitive scheduled</string>
+    <string name="registered">Registered.</string>
+    <string name="delete_up_coming_dialog_title">Delete Scheduled Records</string>
+    <string name="delete_up_coming_dialog_description">Do you want to delete this in-person schedule?</string>
 </resources>

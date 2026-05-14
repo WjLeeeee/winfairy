@@ -1,8 +1,10 @@
 package com.woojin.winfairy.core.data.di
 
 import com.woojin.winfairy.core.data.GameRecordRepositoryImpl
+import com.woojin.winfairy.core.data.UpComingGameRepositoryImpl
 import com.woojin.winfairy.core.data.UserTeamRepositoryImpl
 import com.woojin.winfairy.core.domain.repository.GameRecordRepository
+import com.woojin.winfairy.core.domain.repository.UpComingGameRepository
 import com.woojin.winfairy.core.domain.repository.UserTeamRepository
 import dagger.Binds
 import dagger.Module
@@ -23,4 +25,9 @@ abstract class RepositoryModule {
     abstract fun bindGameRecordRepository(
         impl: GameRecordRepositoryImpl
     ): GameRecordRepository
+    @Binds
+    @Singleton
+    abstract fun bindUpComingGameRepository(
+        impl: UpComingGameRepositoryImpl
+    ): UpComingGameRepository
 }
