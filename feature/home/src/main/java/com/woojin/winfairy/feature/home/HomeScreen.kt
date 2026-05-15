@@ -53,6 +53,7 @@ import com.woojin.winfairy.core.model.WinTier
 import com.woojin.winfairy.core.ui.iconRes
 import com.woojin.winfairy.feature.home.achievement.AchievementItem
 import com.woojin.winfairy.feature.home.analysis.AnalysisItem
+import com.woojin.winfairy.feature.home.components.AddRecordFab
 import com.woojin.winfairy.feature.home.record.RecordItem
 import com.woojin.winfairy.feature.home.upcomingmatch.AddUpComingMatchBottomSheet
 import com.woojin.winfairy.feature.home.upcomingmatch.UpComingMatchItem
@@ -79,7 +80,10 @@ fun HomeScreen(
 
     var selectedTab by remember { mutableIntStateOf(0) }
     Scaffold(
-        containerColor = MaterialTheme.colorScheme.primary
+        containerColor = MaterialTheme.colorScheme.primary,
+        floatingActionButton = {
+            AddRecordFab { onComplete() }
+        }
     ) { innerPadding ->
         Column(
             modifier = Modifier
@@ -123,19 +127,6 @@ fun HomeScreen(
                     1 -> AnalysisItem(modifier = Modifier.weight(1f), gameCount = allRecord.size, analysisResult = analysisResult)
                     2 -> AchievementItem(modifier = Modifier.weight(1f), achievementItem = achievement)
                 }
-                Spacer(modifier = Modifier.height(20.dp))
-                Text(
-                    text = stringResource(R.string.add_records),
-                    fontSize = 16.sp,
-                    color = MaterialTheme.colorScheme.onPrimary,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .clip(RoundedCornerShape(8.dp))
-                        .background(MaterialTheme.colorScheme.primary)
-                        .clickable { onComplete() }
-                        .padding(vertical = 12.dp),
-                    textAlign = TextAlign.Center
-                )
                 Spacer(modifier = Modifier.height(20.dp))
             }
         }

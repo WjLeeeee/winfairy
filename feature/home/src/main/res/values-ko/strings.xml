@@ -6,7 +6,7 @@
     <string name="record">기록</string>
     <string name="analysis">분석</string>
     <string name="achievement">업적</string>
-    <string name="add_records">+ 직관 기록 추가</string>
+    <string name="add_records">직관 기록 추가</string>
     <string name="no_records">직관 기록이 없어요\n기록을 추가해보세요!</string>
     <string name="upcoming_game">직관 예정</string>
     <string name="upcoming">예정</string>
