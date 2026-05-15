@@ -1,7 +1,6 @@
 package com.woojin.winfairy.feature.record
 
 import android.widget.Toast
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -48,7 +47,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -58,7 +56,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
-import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.platform.LocalLocale
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.DpOffset
@@ -67,13 +65,11 @@ import androidx.compose.ui.unit.sp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import com.woojin.winfairy.core.model.GameResult
 import com.woojin.winfairy.core.model.KboTeam
-import com.woojin.winfairy.core.ui.logoRes
 import java.time.LocalDate
 import java.time.ZoneOffset
 import java.time.format.DateTimeFormatter
 import java.util.Locale
 import kotlin.time.ExperimentalTime
-import androidx.compose.ui.platform.LocalLocale
 
 @Composable
 fun AddRecordScreen(
@@ -375,8 +371,6 @@ fun Stadium(
     var expanded by remember { mutableStateOf(false) }
     val myTeamStadium = if (isKorean) myTeam.stadium else myTeam.stadiumEn
 
-    var currentSelectedTeamLogo by remember { mutableIntStateOf(myTeam.logoRes()) }
-
     Box(modifier = Modifier.fillMaxWidth()) {
         Row(
             modifier = Modifier
@@ -387,14 +381,6 @@ fun Stadium(
                 .padding(12.dp, 16.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            Image(
-                painter = painterResource(currentSelectedTeamLogo),
-                contentDescription = null,
-                modifier = Modifier
-                    .size(24.dp)
-                    .clip(CircleShape)
-            )
-            Spacer(modifier = Modifier.width(10.dp))
             Text(
                 text = selectedStadium,
                 fontSize = 14.sp,
@@ -427,13 +413,6 @@ fun Stadium(
                                 verticalAlignment = Alignment.CenterVertically,
                                 horizontalArrangement = Arrangement.spacedBy(10.dp)
                             ) {
-                                Image(
-                                    painter = painterResource(team.logoRes()),
-                                    contentDescription = null,
-                                    modifier = Modifier
-                                        .size(24.dp)
-                                        .clip(CircleShape)
-                                )
                                 Text(
                                     text = stadium,
                                     fontSize = 14.sp,
@@ -446,7 +425,6 @@ fun Stadium(
                         onClick = {
                             onSelect(team)
                             expanded = false
-                            currentSelectedTeamLogo = team.logoRes()
                         }
                     )
                 }
