@@ -102,22 +102,24 @@ fun HomeScreen(
                     .padding(top = if (allRecord.isEmpty()) 20.dp else 0.dp)
             ) {
                 Spacer(modifier = Modifier.height(12.dp))
-                UpComingMatchItem(
-                    upcomingGames = upComingGameList,
-                    myTeam = selectedTeam,
-                    onAddClick = { planVisitBottomSheet = true },
-                    deleteItem = { id -> homeViewModel.deleteUpComingGame(id) },
-                    recordItem = { id -> recordItem(id) },
-                )
-                Spacer(modifier = Modifier.height(12.dp))
                 when (selectedTab) {
-                    0 -> RecordItem(
-                        modifier = Modifier.weight(1f),
-                        recordItem = allRecord,
-                        onItemClick = { recordId -> onEditRecord(recordId) },
-                        onDelete = { recordId -> homeViewModel.deleteRecord(recordId) },
-                        myTeam = selectedTeam,
-                    )
+                    0 -> {
+                        UpComingMatchItem(
+                            upcomingGames = upComingGameList,
+                            myTeam = selectedTeam,
+                            onAddClick = { planVisitBottomSheet = true },
+                            deleteItem = { id -> homeViewModel.deleteUpComingGame(id) },
+                            recordItem = { id -> recordItem(id) },
+                        )
+                        Spacer(modifier = Modifier.height(12.dp))
+                        RecordItem(
+                            modifier = Modifier.weight(1f),
+                            recordItem = allRecord,
+                            onItemClick = { recordId -> onEditRecord(recordId) },
+                            onDelete = { recordId -> homeViewModel.deleteRecord(recordId) },
+                            myTeam = selectedTeam,
+                        )
+                    }
                     1 -> AnalysisItem(modifier = Modifier.weight(1f), gameCount = allRecord.size, analysisResult = analysisResult)
                     2 -> AchievementItem(modifier = Modifier.weight(1f), achievementItem = achievement)
                 }
