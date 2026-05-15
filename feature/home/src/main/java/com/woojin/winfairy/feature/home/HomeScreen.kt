@@ -23,6 +23,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SecondaryTabRow
 import androidx.compose.material3.Tab
+import androidx.compose.material3.TabRowDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
@@ -35,6 +36,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalLocale
 import androidx.compose.ui.res.painterResource
@@ -89,19 +91,9 @@ fun HomeScreen(
                 allRecord = allRecord,
                 winRate = winRate,
                 tier = tier,
+                selectedTab = selectedTab,
+                tabSelected = { index -> selectedTab = index }
             )
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .background(MaterialTheme.colorScheme.background)
-                    .padding(horizontal = 20.dp)
-                    .offset(y = -(18).dp),
-                horizontalArrangement = Arrangement.spacedBy(6.dp)
-            ) {
-                allRecord.take(5).forEach { gameRecord ->
-                    RecentGameResultBadge(gameRecord = gameRecord)
-                }
-            }
             Column(
                 modifier = Modifier
                     .fillMaxSize()
@@ -109,17 +101,13 @@ fun HomeScreen(
                     .padding(horizontal = 25.dp)
                     .padding(top = if (allRecord.isEmpty()) 20.dp else 0.dp)
             ) {
+                Spacer(modifier = Modifier.height(12.dp))
                 UpComingMatchItem(
                     upcomingGames = upComingGameList,
                     myTeam = selectedTeam,
                     onAddClick = { planVisitBottomSheet = true },
                     deleteItem = { id -> homeViewModel.deleteUpComingGame(id) },
                     recordItem = { id -> recordItem(id) },
-                )
-                Spacer(modifier = Modifier.height(12.dp))
-                HomeMainTab(
-                    selectedTab = selectedTab,
-                    onTabClick = { index -> selectedTab = index }
                 )
                 Spacer(modifier = Modifier.height(12.dp))
                 when (selectedTab) {
@@ -169,6 +157,8 @@ fun HeaderLayout(
     allRecord: List<GameRecord>,
     winRate: Float,
     tier: WinTier,
+    selectedTab: Int,
+    tabSelected: (Int) -> Unit
 ) {
     val isKorean = LocalLocale.current.platformLocale.language == "ko"
 
@@ -176,84 +166,109 @@ fun HeaderLayout(
     val draws = allRecord.count { it.result == GameResult.DRAW }
     val loses = allRecord.count { it.result == GameResult.LOSE }
 
-    Box(
-        modifier = modifier
-            .fillMaxWidth()
-            .background(MaterialTheme.colorScheme.primary)
-            .padding(start = 20.dp, end = 20.dp, top = 20.dp, bottom = 20.dp)
+    Column(
+        modifier = Modifier.fillMaxWidth()
     ) {
-        Column(
-            modifier = Modifier
-                .align(Alignment.TopStart),
-            verticalArrangement = Arrangement.spacedBy(8.dp)
+        Box(
+            modifier = modifier
+                .fillMaxWidth()
+                .background(MaterialTheme.colorScheme.primary)
+                .padding(start = 20.dp, end = 20.dp, top = 20.dp)
         ) {
-            Text(
-                text = "${if (isKorean) selectedTeam.teamName else selectedTeam.teamNameEn} ${if (isKorean) selectedTeam.subName else selectedTeam.subNameEn}",
-                color = MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.7f),
-                fontSize = 13.sp
-            )
-            Row(
-                verticalAlignment = Alignment.Bottom,
-                horizontalArrangement = Arrangement.spacedBy(4.dp)
-            ) {
-                Text(
-                    text = "${winRate.toInt()}%",
-                    color = MaterialTheme.colorScheme.onPrimary,
-                    fontSize = 36.sp
-                )
-                Text(
-                    text = stringResource(R.string.win_rate),
-                    color = MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.7f),
-                    fontSize = 14.sp
-                )
-            }
-            Text(
-                text = stringResource(R.string.win_lose_text, wins, draws, loses),
-                color = MaterialTheme.colorScheme.onPrimary,
-                fontSize = 13.sp
-            )
-            if (allRecord.isNotEmpty()) {
-                Text(
-                    text = stringResource(R.string.last_five_games),
-                    color = MaterialTheme.colorScheme.onPrimary,
-                    fontSize = 13.sp
-                )
-            }
-        }
-        Column(
-            modifier = Modifier
-                .align(Alignment.CenterEnd),
-            horizontalAlignment = Alignment.CenterHorizontally
-        ) {
-            Image(
-                painter = painterResource(tier.iconRes()),
-                contentDescription = if (isKorean) tier.tierName else tier.tierNameEn,
+            Column(
                 modifier = Modifier
-                    .size(80.dp)
-            )
-            Text(
-                text = if (isKorean) tier.tierName else tier.tierNameEn,
-                color = MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.9f),
-                fontSize = 13.sp
-            )
-            Text(
-                text = if (isKorean) tier.description else tier.descriptionEn,
-                color = MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.6f),
-                fontSize = 11.sp,
-                lineHeight = 12.sp,
-                textAlign = TextAlign.Center
-            )
+                    .align(Alignment.TopStart),
+                verticalArrangement = Arrangement.spacedBy(2.dp)
+            ) {
+                //팀명
+                Text(
+                    text = "${if (isKorean) selectedTeam.teamName else selectedTeam.teamNameEn} ${if (isKorean) selectedTeam.subName else selectedTeam.subNameEn}",
+                    color = MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.7f),
+                    fontSize = 13.sp,
+                    lineHeight = 13.sp,
+                )
+                //승률
+                Row(
+                    verticalAlignment = Alignment.Bottom,
+                    horizontalArrangement = Arrangement.spacedBy(4.dp)
+                ) {
+                    Text(
+                        text = "${winRate.toInt()}%",
+                        color = MaterialTheme.colorScheme.onPrimary,
+                        fontSize = 36.sp,
+                        lineHeight = 36.sp,
+                    )
+                    Text(
+                        text = stringResource(R.string.win_rate),
+                        color = MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.7f),
+                        fontSize = 14.sp,
+                        lineHeight = 14.sp,
+                    )
+                }
+                //승무패
+                Text(
+                    text = stringResource(R.string.win_lose_text, wins, draws, loses),
+                    color = MaterialTheme.colorScheme.onPrimary,
+                    fontSize = 13.sp,
+                    lineHeight = 13.sp,
+                )
+                //기록이 1경기 이상 있을때 최근 5 경기
+                if (allRecord.isNotEmpty()) {
+                    Text(
+                        text = stringResource(R.string.last_five_games),
+                        color = MaterialTheme.colorScheme.onPrimary,
+                        fontSize = 13.sp,
+                        lineHeight = 13.sp,
+                    )
+                }
+                Row(
+                    horizontalArrangement = Arrangement.spacedBy(6.dp)
+                ) {
+                    allRecord.take(5).forEach { gameRecord ->
+                        RecentGameResultBadge(gameRecord = gameRecord)
+                    }
+                }
+            }
+            Column(
+                modifier = Modifier
+                    .align(Alignment.CenterEnd),
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                Image(
+                    painter = painterResource(tier.iconRes()),
+                    contentDescription = if (isKorean) tier.tierName else tier.tierNameEn,
+                    modifier = Modifier.size(80.dp),
+                    contentScale = ContentScale.Crop
+                )
+                Text(
+                    text = if (isKorean) tier.tierName else tier.tierNameEn,
+                    color = MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.9f),
+                    fontSize = 13.sp,
+                    lineHeight = 13.sp,
+                    modifier = Modifier.offset(y = -(10).dp)
+                )
+                Text(
+                    text = if (isKorean) tier.description else tier.descriptionEn,
+                    color = MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.6f),
+                    fontSize = 11.sp,
+                    lineHeight = 12.sp,
+                    textAlign = TextAlign.Center,
+                    modifier = Modifier.offset(y = -(10).dp)
+                )
+            }
         }
+        HomeMainTab(
+            selectedTab = selectedTab,
+            onTabClick = { index -> tabSelected(index) }
+        )
     }
 }
 
 @Composable
 fun RecentGameResultBadge(gameRecord: GameRecord) {
-    val borderColor = when(gameRecord.result) {
-        GameResult.WIN -> MaterialTheme.colorScheme.primary
-        GameResult.LOSE -> Color(0xFF888888)
-        GameResult.DRAW -> Color(0xFFCCCCCC)
-        GameResult.CANCELED -> Color(0xFFCCCCCC)
+    val color = when(gameRecord.result) {
+        GameResult.WIN -> Color.White
+        else -> Color(0xFF888888)
     }
     val text = when(gameRecord.result) {
         GameResult.WIN -> "W"
@@ -261,27 +276,21 @@ fun RecentGameResultBadge(gameRecord: GameRecord) {
         GameResult.DRAW -> "D"
         GameResult.CANCELED -> "C"
     }
-    val textColor = when(gameRecord.result) {
-        GameResult.WIN -> MaterialTheme.colorScheme.primary
-        GameResult.LOSE -> Color(0xFF888888)
-        GameResult.DRAW -> Color(0xFFCCCCCC)
-        GameResult.CANCELED -> Color(0xFFCCCCCC)
-    }
     Box(
         modifier = Modifier
-            .size(36.dp)
+            .size(24.dp)
             .clip(CircleShape)
-            .background(Color.White)
+            .background(Color.Transparent)
             .border(
                 width = 2.dp,
-                color = borderColor,
+                color = color,
                 shape = CircleShape
             ),
         contentAlignment = Alignment.Center
     ) {
         Text(
             text = text,
-            color = textColor,
+            color = color,
             fontSize = 12.sp
         )
     }
@@ -294,33 +303,34 @@ fun HomeMainTab(
 ) {
     val tabs = listOf(stringResource(R.string.record), stringResource(R.string.analysis), stringResource(R.string.achievement))
     SecondaryTabRow(
-        modifier = Modifier
-            .fillMaxWidth()
-            .background(MaterialTheme.colorScheme.background)
-            .clip(RoundedCornerShape(10.dp)),
+        modifier = Modifier,
         selectedTabIndex = selectedTab,
         containerColor = Color.White,
         contentColor = MaterialTheme.colorScheme.primary,
-        indicator = {},   // 기본 인디케이터 제거
+        indicator = {
+            TabRowDefaults.SecondaryIndicator(
+                modifier = Modifier.tabIndicatorOffset(selectedTab),
+                color = Color.White
+            )
+        },
         divider = {},     // 하단 구분선 제거
         tabs = {
             tabs.forEachIndexed { index, title ->
-                Tab(
-                    selected = selectedTab == index,
-                    onClick = { onTabClick(index) },
+                Box(
                     modifier = Modifier
-                        .background(
-                            if (selectedTab == index) MaterialTheme.colorScheme.primary
-                            else Color.White
-                        ),
-                    text = {
-                        Text(
-                            text = title,
-                            color = if (selectedTab == index) Color.White else MaterialTheme.colorScheme.onSurfaceVariant,
-                            fontSize = 14.sp,
-                        )
-                    }
-                )
+                        .background(MaterialTheme.colorScheme.primary)
+                        .clickable { onTabClick(index) }
+                        .padding(vertical = 8.dp),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Text(
+                        text = title,
+                        fontSize = 15.sp,
+                        lineHeight = 15.sp,
+                        color = if (selectedTab == index) Color.White
+                        else MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+                }
             }
         })
 }
