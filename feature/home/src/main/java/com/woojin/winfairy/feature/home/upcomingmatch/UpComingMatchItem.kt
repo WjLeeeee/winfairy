@@ -82,7 +82,12 @@ fun UpComingMatchItem(
     ) {
         // 헤더: 직관 예정 + 개수 + 추가버튼 + 접기/펼치기
         Row(
-            modifier = Modifier.fillMaxWidth(),
+            modifier = Modifier
+                .fillMaxWidth()
+                .clickable(
+                    enabled = upcomingGames.isNotEmpty(),
+                    onClick = { isExpanded = !isExpanded }
+                ),
             verticalAlignment = Alignment.CenterVertically
         ) {
             Icon(
@@ -128,10 +133,6 @@ fun UpComingMatchItem(
             // 접기/펼치기
             Row(
                 modifier = Modifier
-                    .clickable(
-                        enabled = upcomingGames.isNotEmpty(),
-                        onClick = { isExpanded = !isExpanded }
-                    )
                     .clip(RoundedCornerShape(6.dp))
                     .background(Color(0xffFAD992))
                     .padding(horizontal = 8.dp, vertical = 2.dp),
