@@ -14,6 +14,17 @@
     <string name="record_variables">변수 기록</string>
     <string name="options">선택사항</string>
     <string name="save_record">기록 저장</string>
+    <string name="add_more">+ 추가</string>
+    <string name="add">추가</string>
     <string name="choose_enemy_team">상대 팀을 선택해주세요.</string>
     <string name="input_variable_text_field">%s 입력</string>
+    <string name="ticket_top_info">Admit One &#183; No.%1$s</string>
+    <string name="ticket_stub_title">STUB &#183; 변수 기록</string>
+    <string name="seat">좌석</string>
+    <string name="partner">동반자</string>
+    <string name="uniform">유니폼</string>
+    <string name="food">음식</string>
+    <string name="select">선택</string>
+    <string name="select_finish">선택 완료</string>
+    <string name="base_text_field">입력...</string>
 </resources>

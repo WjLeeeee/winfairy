@@ -24,10 +24,9 @@ import com.woojin.winfairy.core.navigation.EditRecord
 import com.woojin.winfairy.core.navigation.Home
 import com.woojin.winfairy.core.navigation.Onboarding
 import com.woojin.winfairy.core.navigation.UpComingGameRecord
-import com.woojin.winfairy.core.ui.mascot
 import com.woojin.winfairy.feature.home.HomeScreen
 import com.woojin.winfairy.feature.onboarding.OnboardingScreen
-import com.woojin.winfairy.feature.record.AddRecordScreen
+import com.woojin.winfairy.feature.record.AddTicketScreen
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.delay
 
@@ -98,44 +97,57 @@ class MainActivity : ComponentActivity() {
                             HomeScreen(
                                 selectedTeam = team,
                                 onComplete = {
-                                    navController.navigate(AddRecord)
+                                    navController.navigate(AddRecord(it))
                                 },
-                                onEditRecord = { recordId ->
-                                    navController.navigate(EditRecord(recordId))
+                                onEditRecord = { index, recordId ->
+                                    navController.navigate(
+                                        EditRecord(
+                                            gameNo = index,
+                                            recordId = recordId
+                                        )
+                                    )
                                 },
-                                recordItem = { id -> navController.navigate(UpComingGameRecord(id = id)) }
+                                recordItem = { id, allGameCnt ->
+                                    navController.navigate(
+                                        UpComingGameRecord(gameNo = allGameCnt, id = id)
+                                    )
+                                }
                             )
                         }
                     }
-                    composable<AddRecord> {
+                    composable<AddRecord> { backStackEntry ->
                         selectedTeam?.let { team ->
-                            AddRecordScreen(
+                            val args = backStackEntry.toRoute<AddRecord>()
+                            AddTicketScreen(
                                 selectedTeam = team,
                                 onComplete = {
                                     navController.popBackStack()
-                                }
+                                },
+                                gameNo = args.gameNo,
                             )
                         }
                     }
                     composable<UpComingGameRecord> { backStackEntry ->
                         selectedTeam?.let { team ->
-                            val upComingId = backStackEntry.toRoute<UpComingGameRecord>()
-                            AddRecordScreen(
+                            val args = backStackEntry.toRoute<UpComingGameRecord>()
+                            AddTicketScreen(
                                 selectedTeam = team,
-                                upComingGameId = upComingId.id,
+                                upComingGameId = args.id,
                                 onComplete = {
                                     navController.popBackStack()
-                                }
+                                },
+                                gameNo = args.gameNo + 1,
                             )
                         }
                     }
                     composable<EditRecord> { backStackEntry ->
                         selectedTeam?.let { team ->
-                            val editRecord = backStackEntry.toRoute<EditRecord>()
-                            AddRecordScreen(
+                            val args = backStackEntry.toRoute<EditRecord>()
+                            AddTicketScreen(
                                 selectedTeam = team,
-                                recordId = editRecord.recordId,
-                                onComplete = { navController.popBackStack() }
+                                recordId = args.recordId,
+                                onComplete = { navController.popBackStack() },
+                                gameNo = args.gameNo,
                             )
                         }
                     }

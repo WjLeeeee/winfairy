@@ -18,11 +18,9 @@ import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SecondaryTabRow
-import androidx.compose.material3.Tab
 import androidx.compose.material3.TabRowDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -48,7 +46,6 @@ import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import com.woojin.winfairy.core.model.GameRecord
 import com.woojin.winfairy.core.model.GameResult
 import com.woojin.winfairy.core.model.KboTeam
-import com.woojin.winfairy.core.model.UpcomingGame
 import com.woojin.winfairy.core.model.WinTier
 import com.woojin.winfairy.core.ui.iconRes
 import com.woojin.winfairy.feature.home.achievement.AchievementItem
@@ -61,10 +58,10 @@ import com.woojin.winfairy.feature.home.upcomingmatch.UpComingMatchItem
 @SuppressLint("LocalContextGetResourceValueCall")
 @Composable
 fun HomeScreen(
-    onComplete: () -> Unit,
-    onEditRecord: (Long) -> Unit,
+    onComplete: (Int) -> Unit,
+    onEditRecord: (Int, Long) -> Unit,
     selectedTeam: KboTeam,
-    recordItem: (Long) -> Unit = {},
+    recordItem: (Long, Int) -> Unit,
     homeViewModel: HomeViewModel = hiltViewModel()
 ) {
     val context = LocalContext.current
@@ -82,7 +79,7 @@ fun HomeScreen(
     Scaffold(
         containerColor = MaterialTheme.colorScheme.primary,
         floatingActionButton = {
-            AddRecordFab { onComplete() }
+            AddRecordFab { onComplete(allRecord.size + 1) }
         }
     ) { innerPadding ->
         Column(
@@ -113,19 +110,28 @@ fun HomeScreen(
                             myTeam = selectedTeam,
                             onAddClick = { planVisitBottomSheet = true },
                             deleteItem = { id -> homeViewModel.deleteUpComingGame(id) },
-                            recordItem = { id -> recordItem(id) },
+                            recordItem = { id -> recordItem(id, allRecord.size) },
                         )
                         Spacer(modifier = Modifier.height(12.dp))
                         RecordItem(
                             modifier = Modifier.weight(1f),
                             recordItem = allRecord,
-                            onItemClick = { recordId -> onEditRecord(recordId) },
+                            onItemClick = { index, recordId -> onEditRecord(index, recordId) },
                             onDelete = { recordId -> homeViewModel.deleteRecord(recordId) },
                             myTeam = selectedTeam,
                         )
                     }
-                    1 -> AnalysisItem(modifier = Modifier.weight(1f), gameCount = allRecord.size, analysisResult = analysisResult)
-                    2 -> AchievementItem(modifier = Modifier.weight(1f), achievementItem = achievement)
+
+                    1 -> AnalysisItem(
+                        modifier = Modifier.weight(1f),
+                        gameCount = allRecord.size,
+                        analysisResult = analysisResult
+                    )
+
+                    2 -> AchievementItem(
+                        modifier = Modifier.weight(1f),
+                        achievementItem = achievement
+                    )
                 }
                 Spacer(modifier = Modifier.height(20.dp))
             }
@@ -137,7 +143,8 @@ fun HomeScreen(
             registerBtn = { upcomingGame ->
                 homeViewModel.regisUpComingGame(upcomingGame)
                 planVisitBottomSheet = false
-                Toast.makeText(context, context.getString(R.string.registered), Toast.LENGTH_SHORT).show()
+                Toast.makeText(context, context.getString(R.string.registered), Toast.LENGTH_SHORT)
+                    .show()
             },
         )
     }
@@ -259,11 +266,11 @@ fun HeaderLayout(
 
 @Composable
 fun RecentGameResultBadge(gameRecord: GameRecord) {
-    val color = when(gameRecord.result) {
+    val color = when (gameRecord.result) {
         GameResult.WIN -> Color.White
         else -> Color(0xFF888888)
     }
-    val text = when(gameRecord.result) {
+    val text = when (gameRecord.result) {
         GameResult.WIN -> "W"
         GameResult.LOSE -> "L"
         GameResult.DRAW -> "D"
@@ -294,7 +301,11 @@ fun HomeMainTab(
     selectedTab: Int,
     onTabClick: (Int) -> Unit,
 ) {
-    val tabs = listOf(stringResource(R.string.record), stringResource(R.string.analysis), stringResource(R.string.achievement))
+    val tabs = listOf(
+        stringResource(R.string.record),
+        stringResource(R.string.analysis),
+        stringResource(R.string.achievement)
+    )
     SecondaryTabRow(
         modifier = Modifier,
         selectedTabIndex = selectedTab,

@@ -9,10 +9,10 @@ data object Onboarding
 data object Home
 
 @Serializable
-data object AddRecord
+data class AddRecord(val gameNo: Int)
 
 @Serializable
-data class UpComingGameRecord(val id: Long? = null)
+data class UpComingGameRecord(val gameNo: Int, val id: Long? = null)
 
 @Serializable
-data class EditRecord(val recordId: Long)
+data class EditRecord(val gameNo: Int, val recordId: Long)

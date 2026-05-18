@@ -16,4 +16,15 @@
     <string name="choose_enemy_team">choose enemy team</string>
     <string name="input_variable_text_field">input %s</string>
     <string name="modify_intuitive_records">Modify Intuitive Records</string>
+    <string name="ticket_top_info">Admit One &#183; No.%1$s</string>
+    <string name="ticket_stub_title">STUB &#183; Record Variables</string>
+    <string name="seat">Seat</string>
+    <string name="partner">Partner</string>
+    <string name="uniform">Uniform</string>
+    <string name="food">Food</string>
+    <string name="add_more">+ Add</string>
+    <string name="base_text_field">Input...</string>
+    <string name="add">Add</string>
+    <string name="select_finish">Select Finish</string>
+    <string name="select">Select</string>
 </resources>

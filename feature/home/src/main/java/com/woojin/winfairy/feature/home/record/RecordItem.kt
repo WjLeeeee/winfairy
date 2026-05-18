@@ -14,7 +14,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.MaterialTheme
@@ -47,7 +47,7 @@ import com.woojin.winfairy.feature.home.R
 fun RecordItem(
     modifier: Modifier = Modifier,
     recordItem: List<GameRecord>,
-    onItemClick: (Long) -> Unit,
+    onItemClick: (Int, Long) -> Unit,
     onDelete: (Long) -> Unit,
     myTeam: KboTeam,
 ) {
@@ -77,7 +77,7 @@ fun RecordItem(
                 .clip(RoundedCornerShape(8.dp))
                 .background(MaterialTheme.colorScheme.background)
         ) {
-            items(recordItem) { record ->
+            itemsIndexed(recordItem) { index, record ->
                 val enemyTeam = KboTeam.entries.find { it.name == record.opponentTeam }
                 val resultText = when (record.result) {
                     GameResult.WIN -> stringResource(R.string.win)
@@ -96,7 +96,7 @@ fun RecordItem(
                         .fillMaxWidth()
                         .padding(vertical = 4.dp)
                         .combinedClickable(
-                            onClick = { onItemClick(record.id) },
+                            onClick = { onItemClick(recordItem.size - index, record.id) },
                             onLongClick = { showDeleteDialog = record.id }
                         )
                 ) {
@@ -200,14 +200,18 @@ fun RecordItem(
                                     else enemyTeam?.teamNameEn ?: record.opponentTeam,
                                     fontSize = 14.sp,
                                     fontWeight = FontWeight.SemiBold,
-                                    color = if (record.result == GameResult.LOSE) MaterialTheme.colorScheme.onBackground else Color(0xFF888888),
+                                    color = if (record.result == GameResult.LOSE) MaterialTheme.colorScheme.onBackground else Color(
+                                        0xFF888888
+                                    ),
                                     lineHeight = 14.sp
                                 )
                                 Text(
                                     text = if (isKorean) enemyTeam?.subName ?: ""
                                     else enemyTeam?.subNameEn ?: "",
                                     fontSize = 11.sp,
-                                    color = if (record.result == GameResult.LOSE) Color(0xFF999999) else Color(0xFFBBBBBB),
+                                    color = if (record.result == GameResult.LOSE) Color(0xFF999999) else Color(
+                                        0xFFBBBBBB
+                                    ),
                                     lineHeight = 11.sp
                                 )
                             }

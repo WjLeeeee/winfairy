@@ -39,15 +39,22 @@ class AddRecordViewModel @Inject constructor(
     private val _suggestions = MutableStateFlow<Map<String, List<String>>>(emptyMap())
     val suggestions: StateFlow<Map<String, List<String>>> = _suggestions.asStateFlow()
 
+    private val _isMyTeamHome = MutableStateFlow(true)
+    val isMyTeamHome: StateFlow<Boolean> = _isMyTeamHome
+
     private var isEditMode = false
     private var editRecordId: Long = 0
     private var isAddUpComingGame = false
     private var upComingGameId: Long = 0
 
-    fun loadUpComingData(id: Long,  isKorean: Boolean) {
+    fun loadUpComingData(id: Long, isKorean: Boolean, myTeam: KboTeam) {
         viewModelScope.launch {
             val upComingData = getUpComingGameByIdUseCase(id)
             if (upComingData != null) {
+
+                val myTeamStadium = if (isKorean) myTeam.stadium else myTeam.stadiumEn
+                val isMyTeamHome = upComingData.stadium == myTeamStadium
+
                 isAddUpComingGame = true
                 upComingGameId = id
                 _recordData.value = RecordData(
@@ -65,6 +72,8 @@ class AddRecordViewModel @Inject constructor(
                         )
                     }
                 )
+
+                _isMyTeamHome.value = isMyTeamHome
             }
         }
     }
