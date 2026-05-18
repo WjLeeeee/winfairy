@@ -27,6 +27,7 @@ import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Clear
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Remove
+import androidx.compose.material.icons.filled.Share
 import androidx.compose.material3.DatePicker
 import androidx.compose.material3.DatePickerDialog
 import androidx.compose.material3.Icon
@@ -51,8 +52,11 @@ import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.PathEffect
 import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.layout.LayoutCoordinates
+import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalLocale
+import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -79,6 +83,23 @@ fun AddTicketScreen(
 ) {
     val context = LocalContext.current
     val isKorean = LocalLocale.current.platformLocale.language == "ko"
+    val view = LocalView.current
+    var ticketCoordinates by remember { mutableStateOf<LayoutCoordinates?>(null) }
+    var triggerShare by remember { mutableStateOf(false) }
+
+    LaunchedEffect(triggerShare) {
+        if (triggerShare) {
+            ticketCoordinates?.let { coordinates ->
+                shareTicket(
+                    view = view,
+                    coordinates = coordinates,
+                    cacheDir = context.cacheDir,
+                    packageName = context.packageName,
+                )
+            }
+            triggerShare = false
+        }
+    }
 
     val recordData by viewModel.recordData.collectAsState()
     val suggestions by viewModel.suggestions.collectAsState()
@@ -155,21 +176,29 @@ fun AddTicketScreen(
         ) {
             TopLayout(
                 onBackClick = { onComplete() },
-                title = if (recordId == null) R.string.add_intuitive_records else R.string.modify_intuitive_records
+                title = if (recordId == null) R.string.add_intuitive_records else R.string.modify_intuitive_records,
+                onShareClick = { triggerShare = true }
             )
-            MainTicket(
-                selectedHomeTeam = selectedHomeTeam,
-                selectedAwayTeam = selectedAwayTeam,
-                changeHomeTeam = { changeHomeTeam(it) },
-                changeAwayTeam = { changeAwayTeam(it) },
-                onDateSelected = { viewModel.updateRecordData(date = it) },
-                recordData = recordData,
-                suggestions = suggestions,
-                onVariableChange = { index, value -> viewModel.updateVariable(index, value) },
-                onVariableAdd = { index, value -> viewModel.addVariableValue(index, value) },
-                onVariableRemove = { index, value -> viewModel.removeVariableValue(index, value) },
-                gameNo = gameNo,
-            )
+            //티켓 영역 캡쳐를 위해 Box로 감사기
+            Box(
+                modifier = Modifier.onGloballyPositioned {
+                    ticketCoordinates = it
+                }
+            ) {
+                MainTicket(
+                    selectedHomeTeam = selectedHomeTeam,
+                    selectedAwayTeam = selectedAwayTeam,
+                    changeHomeTeam = { changeHomeTeam(it) },
+                    changeAwayTeam = { changeAwayTeam(it) },
+                    onDateSelected = { viewModel.updateRecordData(date = it) },
+                    recordData = recordData,
+                    suggestions = suggestions,
+                    onVariableChange = { index, value -> viewModel.updateVariable(index, value) },
+                    onVariableAdd = { index, value -> viewModel.addVariableValue(index, value) },
+                    onVariableRemove = { index, value -> viewModel.removeVariableValue(index, value) },
+                    gameNo = gameNo,
+                )
+            }
             ChooseGameResult(
                 resultState = recordData.gameResult,
                 onSelect = { result -> viewModel.updateRecordData(gameResult = result) }
@@ -208,6 +237,7 @@ fun AddTicketScreen(
 fun TopLayout(
     onBackClick: () -> Unit,
     title: Int,
+    onShareClick: () -> Unit,
 ) {
     Row(
         modifier = Modifier
@@ -227,6 +257,15 @@ fun TopLayout(
             text = stringResource(title),
             fontSize = 24.sp,
             color = MaterialTheme.colorScheme.onBackground,
+        )
+        Spacer(modifier = Modifier.weight(1f))
+        Icon(
+            imageVector = Icons.Default.Share,
+            contentDescription = "share_ticket",
+            tint = MaterialTheme.colorScheme.onBackground,
+            modifier = Modifier
+                .size(24.dp)
+                .clickable { onShareClick() }
         )
     }
 }

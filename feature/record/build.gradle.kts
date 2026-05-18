@@ -75,4 +75,7 @@ dependencies {
 
     //java.time 사용을 위해
     coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:2.1.4")
+
+    //kakao share
+    implementation("com.kakao.sdk:v2-all:2.20.1")
 }
