@@ -245,7 +245,7 @@ fun HeaderLayout(
                     color = MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.9f),
                     fontSize = 13.sp,
                     lineHeight = 13.sp,
-                    modifier = Modifier.offset(y = -(10).dp)
+                    modifier = Modifier.offset(y = -(5).dp)
                 )
                 Text(
                     text = if (isKorean) tier.description else tier.descriptionEn,
@@ -253,7 +253,7 @@ fun HeaderLayout(
                     fontSize = 11.sp,
                     lineHeight = 12.sp,
                     textAlign = TextAlign.Center,
-                    modifier = Modifier.offset(y = -(10).dp)
+                    modifier = Modifier.offset(y = -(5).dp)
                 )
             }
         }
