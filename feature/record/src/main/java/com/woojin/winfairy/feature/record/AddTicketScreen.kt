@@ -26,6 +26,7 @@ import androidx.compose.material.icons.automirrored.filled.ArrowBackIos
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Clear
 import androidx.compose.material.icons.filled.Close
+import androidx.compose.material.icons.filled.Download
 import androidx.compose.material.icons.filled.Remove
 import androidx.compose.material.icons.filled.Share
 import androidx.compose.material3.DatePicker
@@ -86,6 +87,7 @@ fun AddTicketScreen(
     val view = LocalView.current
     var ticketCoordinates by remember { mutableStateOf<LayoutCoordinates?>(null) }
     var triggerShare by remember { mutableStateOf(false) }
+    var triggerSave by remember { mutableStateOf(false) }
 
     LaunchedEffect(triggerShare) {
         if (triggerShare) {
@@ -98,6 +100,25 @@ fun AddTicketScreen(
                 )
             }
             triggerShare = false
+        }
+    }
+
+    LaunchedEffect(triggerSave) {
+        if (triggerSave) {
+            ticketCoordinates?.let { coordinates ->
+                saveTicketToGallery(
+                    view = view,
+                    coordinates = coordinates,
+                    context = context,
+                    onSuccess = {
+                        Toast.makeText(context, R.string.save_to_gallery, Toast.LENGTH_SHORT).show()
+                    },
+                    onFailure = {
+                        Toast.makeText(context, R.string.save_fail, Toast.LENGTH_SHORT).show()
+                    }
+                )
+            }
+            triggerSave = false
         }
     }
 
@@ -177,6 +198,7 @@ fun AddTicketScreen(
             TopLayout(
                 onBackClick = { onComplete() },
                 title = if (recordId == null) R.string.add_intuitive_records else R.string.modify_intuitive_records,
+                onDownloadClick = { triggerSave = true },
                 onShareClick = { triggerShare = true }
             )
             //티켓 영역 캡쳐를 위해 Box로 감사기
@@ -238,11 +260,13 @@ fun TopLayout(
     onBackClick: () -> Unit,
     title: Int,
     onShareClick: () -> Unit,
+    onDownloadClick: () -> Unit,
 ) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(vertical = 12.dp)
+            .padding(vertical = 12.dp),
+        verticalAlignment = Alignment.CenterVertically
     ) {
         Icon(
             imageVector = Icons.AutoMirrored.Filled.ArrowBackIos,
@@ -259,6 +283,15 @@ fun TopLayout(
             color = MaterialTheme.colorScheme.onBackground,
         )
         Spacer(modifier = Modifier.weight(1f))
+        Icon(
+            imageVector = Icons.Default.Download,
+            contentDescription = "download_ticket",
+            tint = MaterialTheme.colorScheme.onBackground,
+            modifier = Modifier
+                .size(24.dp)
+                .clickable { onDownloadClick() }
+        )
+        Spacer(modifier = Modifier.width(4.dp))
         Icon(
             imageVector = Icons.Default.Share,
             contentDescription = "share_ticket",

@@ -100,6 +100,40 @@ fun shareTicket(
     }
 }
 
+fun saveTicketToGallery(
+    view: View,
+    coordinates: LayoutCoordinates,
+    context: android.content.Context,
+    onSuccess: () -> Unit,
+    onFailure: () -> Unit,
+) {
+    captureComposable(view, coordinates) { bitmap ->
+        val paddedBitmap = addPaddingToBitmap(bitmap, 60)
+        try {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+                val contentValues = android.content.ContentValues().apply {
+                    put(android.provider.MediaStore.Images.Media.DISPLAY_NAME, "ticket_${System.currentTimeMillis()}.png")
+                    put(android.provider.MediaStore.Images.Media.MIME_TYPE, "image/png")
+                    put(android.provider.MediaStore.Images.Media.RELATIVE_PATH, android.os.Environment.DIRECTORY_PICTURES + "/WinFairy")
+                }
+                val uri = context.contentResolver.insert(
+                    android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI,
+                    contentValues
+                )
+                uri?.let {
+                    context.contentResolver.openOutputStream(it)?.use { out ->
+                        paddedBitmap.compress(Bitmap.CompressFormat.PNG, 100, out)
+                    }
+                    onSuccess()
+                } ?: onFailure()
+            }
+        } catch (e: Exception) {
+            Log.e("woojinCheck", "갤러리 저장 실패: $e")
+            onFailure()
+        }
+    }
+}
+
 fun addPaddingToBitmap(bitmap: Bitmap, padding: Int): Bitmap {
     val newWidth = bitmap.width + padding * 2
     val newHeight = bitmap.height + padding * 2
