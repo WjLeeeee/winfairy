@@ -6,6 +6,8 @@ plugins {
     alias(libs.plugins.kotlin.compose)
     alias(libs.plugins.hilt)
     alias(libs.plugins.ksp)
+    id("com.google.gms.google-services")
+    id("com.google.firebase.crashlytics")
 }
 
 val localProperties = Properties()
@@ -91,6 +93,11 @@ dependencies {
     implementation(libs.androidx.core.splashscreen)
     //카카오 공유하기
     implementation("com.kakao.sdk:v2-all:2.20.1")
+
+    //Firebase
+    implementation(platform(libs.firebase.bom))
+    implementation(libs.firebase.analytics)
+    implementation(libs.firebase.crashlytics)
 
     implementation(project(":core:designsystem"))
     implementation(project(":core:navigation"))

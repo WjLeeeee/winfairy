@@ -9,6 +9,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
@@ -18,6 +19,10 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.toRoute
+import com.google.firebase.Firebase
+import com.google.firebase.analytics.FirebaseAnalytics
+import com.google.firebase.analytics.analytics
+import com.google.firebase.analytics.logEvent
 import com.woojin.winfairy.core.designsystem.theme.WinFairyTheme
 import com.woojin.winfairy.core.navigation.AddRecord
 import com.woojin.winfairy.core.navigation.EditRecord
@@ -79,6 +84,23 @@ class MainActivity : ComponentActivity() {
                 )
             }
 
+            val analytics = remember { Firebase.analytics }
+            LaunchedEffect(navController) {
+                navController.addOnDestinationChangedListener { _, destination, _ ->
+                    val screenName = when (destination.route) {
+                        "com.woojin.winfairy.core.navigation.Home" -> "Home"
+                        "com.woojin.winfairy.core.navigation.Onboarding" -> "Onboarding"
+                        "com.woojin.winfairy.core.navigation.AddRecord" -> "AddRecord"
+                        "com.woojin.winfairy.core.navigation.UpComingGameRecord" -> "UpComingGameRecord"
+                        "com.woojin.winfairy.core.navigation.EditRecord" -> "EditRecord"
+                        else -> destination.route ?: "unknown"
+                    }
+                    analytics.logEvent(FirebaseAnalytics.Event.SCREEN_VIEW) {
+                        param(FirebaseAnalytics.Param.SCREEN_NAME, screenName)
+                    }
+                }
+            }
+
             WinFairyTheme(team = selectedTeam) {
                 NavHost(
                     navController = navController,
@@ -86,6 +108,9 @@ class MainActivity : ComponentActivity() {
                 ) {
                     composable<Onboarding> {
                         OnboardingScreen { selectedKboTeam ->
+                            analytics.logEvent("select_team") {
+                                param("team_name", selectedKboTeam.teamName)
+                            }
                             viewModel.setTeam(selectedKboTeam)
                             navController.navigate(Home) {
                                 popUpTo(Onboarding) { inclusive = true }
