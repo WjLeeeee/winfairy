@@ -9,7 +9,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
@@ -41,7 +41,7 @@ class MainActivity : ComponentActivity() {
             val viewModel: MainViewModel = hiltViewModel()
             val selectedTeam by viewModel.selectedTeam.collectAsState()
             val isLoading by viewModel.isLoading.collectAsState()
-            var showSplash by remember { mutableStateOf(true) }
+            var showSplash by rememberSaveable { mutableStateOf(true) }
             // 로딩 끝나면 시스템 Splash 제거
             LaunchedEffect(isLoading) {
                 if (!isLoading) {
