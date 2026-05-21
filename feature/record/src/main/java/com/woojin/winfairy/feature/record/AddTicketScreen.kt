@@ -56,7 +56,6 @@ import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.layout.LayoutCoordinates
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.platform.LocalLocale
 import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -83,7 +82,7 @@ fun AddTicketScreen(
     viewModel: AddRecordViewModel = hiltViewModel()
 ) {
     val context = LocalContext.current
-    val isKorean = LocalLocale.current.platformLocale.language == "ko"
+    val isKorean = java.util.Locale.getDefault().language == "ko"
     val view = LocalView.current
     var ticketCoordinates by remember { mutableStateOf<LayoutCoordinates?>(null) }
     var triggerShare by remember { mutableStateOf(false) }
@@ -353,7 +352,7 @@ fun TicketTopInfo(
     recordData: RecordData,
     gameNo: Int,
 ) {
-    val isKorean = LocalLocale.current.platformLocale.language == "ko"
+    val isKorean = java.util.Locale.getDefault().language == "ko"
     var showTeamSelectBottomSheet by remember { mutableStateOf(false) }
     var isHome by remember { mutableStateOf(true) } // 팀 선택 바텀시트 최초 선택되어있는 팀
 

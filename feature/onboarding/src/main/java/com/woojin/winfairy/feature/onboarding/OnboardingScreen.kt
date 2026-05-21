@@ -39,7 +39,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
-import androidx.compose.ui.platform.LocalLocale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -54,7 +53,7 @@ import com.woojin.winfairy.core.ui.preview.CustomDevicePreviews
 
 @Composable
 fun OnboardingScreen(onComplete: (KboTeam) -> Unit) {
-    val isKorean = LocalLocale.current.platformLocale.language == "ko"
+    val isKorean = java.util.Locale.getDefault().language == "ko"
 
     var selectedTeam by remember { mutableStateOf(KboTeam.entries.first()) }
 
@@ -148,7 +147,7 @@ fun TeamCard(
     isSelected: Boolean,
     onClick: () -> Unit,
 ) {
-    val isKorean = LocalLocale.current.platformLocale.language == "ko"
+    val isKorean = java.util.Locale.getDefault().language == "ko"
     val primaryColor = team.primaryColor()
 
     // 애니메이션 값
