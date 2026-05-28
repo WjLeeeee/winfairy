@@ -23,10 +23,7 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBackIos
-import androidx.compose.material.icons.filled.Check
-import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Download
-import androidx.compose.material.icons.filled.Remove
 import androidx.compose.material.icons.filled.Share
 import androidx.compose.material3.DatePicker
 import androidx.compose.material3.DatePickerDialog
@@ -211,7 +208,19 @@ fun AddTicketScreen(
                     changeHomeTeam = { changeHomeTeam(it) },
                     changeAwayTeam = { changeAwayTeam(it) },
                     onDateSelected = { viewModel.updateRecordData(date = it) },
-                    onScoreSelected = { home, away -> viewModel.updateRecordData(homeScore = home, awayScore = away) },
+                    onScoreSelected = { home, away ->
+                        val result = when {
+                            home > away -> GameResult.WIN
+                            home < away -> GameResult.LOSE
+                            else -> GameResult.DRAW
+                        }
+                        viewModel.updateRecordData(
+                            homeScore = home,
+                            awayScore = away,
+                            gameResult = result
+                        )
+                    },
+                    changeScore = { result -> viewModel.updateRecordData(gameResult = result) },
                     recordData = recordData,
                     suggestions = suggestions,
                     onVariableChange = { index, value -> viewModel.updateVariable(index, value) },
@@ -220,10 +229,6 @@ fun AddTicketScreen(
                     gameNo = gameNo,
                 )
             }
-            ChooseGameResult(
-                resultState = recordData.gameResult,
-                onSelect = { result -> viewModel.updateRecordData(gameResult = result) }
-            )
             Text(
                 text = stringResource(R.string.save_record),
                 fontSize = 16.sp,
@@ -312,6 +317,7 @@ fun MainTicket(
     changeAwayTeam: (KboTeam) -> Unit,
     onDateSelected: (String) -> Unit,
     onScoreSelected: (Int, Int) -> Unit,
+    changeScore: (GameResult) -> Unit,
     recordData: RecordData,
     suggestions: Map<String, List<String>>,
     onVariableChange: (Int, String) -> Unit,
@@ -332,6 +338,7 @@ fun MainTicket(
             changeAwayTeam = { changeAwayTeam(it) },
             onDateSelected = { onDateSelected(it) },
             onScoreSelected = { home, away -> onScoreSelected(home, away) },
+            changeGameResult = { result -> changeScore(result) },
             recordData = recordData,
             gameNo = gameNo,
         )
@@ -354,6 +361,7 @@ fun TicketTopInfo(
     changeAwayTeam: (KboTeam) -> Unit,
     onDateSelected: (String) -> Unit,
     onScoreSelected: (Int, Int) -> Unit,
+    changeGameResult: (GameResult) -> Unit,
     recordData: RecordData,
     gameNo: Int,
 ) {
@@ -369,11 +377,11 @@ fun TicketTopInfo(
     val formatter = DateTimeFormatter.ofPattern("yyyy년 M월 d일 (E)", Locale.KOREAN)
     //------------------
 
-    val stampInfo = remember(recordData.gameResult) {
-        when (recordData.gameResult) {
-            GameResult.WIN -> Pair("  *  WIN  *  ", Color(0xffd23838))
-            GameResult.LOSE -> Pair("  X  LOSE  X  ", Color(0xff3a4658))
-            GameResult.DRAW -> Pair("  =  DRAW  =  ", Color(0xff7a6b2e))
+    val stampInfo = remember(recordData.homeScore, recordData.awayScore) {
+        when {
+            recordData.homeScore > recordData.awayScore -> Pair("  *  WIN  *  ", Color(0xffd23838))
+            recordData.homeScore < recordData.awayScore -> Pair("  X  LOSE  X  ", Color(0xff3a4658))
+            else -> Pair("  =  DRAW  =  ", Color(0xff7a6b2e))
         }
     }
     Column(
@@ -820,76 +828,5 @@ fun TicketBottomInfo(
             onDismiss = { showVariableSheet = false },
             onSave = { showVariableSheet = false }
         )
-    }
-}
-
-@Composable
-fun ChooseGameResult(
-    resultState: GameResult,
-    onSelect: (GameResult) -> Unit,
-) {
-    Column(modifier = Modifier.fillMaxWidth()) {
-        Text(
-            text = stringResource(R.string.game_result),
-            fontSize = 16.sp,
-            lineHeight = 16.sp,
-            color = MaterialTheme.colorScheme.onBackground
-        )
-        Spacer(modifier = Modifier.height(8.dp))
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.spacedBy(8.dp)
-        ) {
-            GameResult.entries.forEach { result ->
-                val isSelected = result == resultState
-                val label = when (result) {
-                    GameResult.WIN -> stringResource(R.string.win)
-                    GameResult.LOSE -> stringResource(R.string.lose)
-                    GameResult.DRAW -> stringResource(R.string.draw)
-                }
-                val icon = when (result) {
-                    GameResult.WIN -> Icons.Default.Check
-                    GameResult.LOSE -> Icons.Default.Close
-                    GameResult.DRAW -> Icons.Default.Remove
-                }
-
-                Column(
-                    modifier = Modifier
-                        .weight(1f)
-                        .clip(RoundedCornerShape(10.dp))
-                        .background(
-                            if (isSelected) MaterialTheme.colorScheme.primary
-                            else Color.White
-                        )
-                        .clickable { onSelect(result) }
-                        .padding(vertical = 10.dp),
-                    horizontalAlignment = Alignment.CenterHorizontally
-                ) {
-                    Box(
-                        modifier = Modifier
-                            .size(20.dp)
-                            .border(
-                                width = 1.dp,
-                                color = if (isSelected) Color.White else Color(0xFF888888),
-                                shape = CircleShape
-                            ),
-                        contentAlignment = Alignment.Center
-                    ) {
-                        Icon(
-                            imageVector = icon,
-                            contentDescription = label,
-                            tint = if (isSelected) Color.White else Color(0xFF888888),
-                            modifier = Modifier.size(12.dp)
-                        )
-                    }
-                    Spacer(modifier = Modifier.height(4.dp))
-                    Text(
-                        text = label,
-                        fontSize = 12.sp,
-                        color = if (isSelected) Color.White else Color(0xFF888888)
-                    )
-                }
-            }
-        }
     }
 }
