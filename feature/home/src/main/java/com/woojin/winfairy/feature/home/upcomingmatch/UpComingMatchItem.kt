@@ -203,6 +203,29 @@ fun UpcomingGameItem(
             0
         }
     }
+    val isMyTeamHome = game.stadium == myTeam.stadium || game.stadium == myTeam.stadiumEn
+    val homeMascot = painterResource(if (isMyTeamHome) myTeam.mascot() else enemyTeam?.mascot() ?: myTeam.mascot())
+    val awayMascot = painterResource(if (!isMyTeamHome) myTeam.mascot() else enemyTeam?.mascot() ?: myTeam.mascot())
+    val homeTeamName = if (isMyTeamHome) {
+        if (isKorean) myTeam.teamName else myTeam.teamNameEn
+    } else {
+        if (isKorean) enemyTeam?.teamName else enemyTeam?.teamNameEn
+    }
+    val homeTeamSubName = if (isMyTeamHome) {
+        if (isKorean) myTeam.subName else myTeam.subNameEn
+    } else {
+        if (isKorean) enemyTeam?.subName else enemyTeam?.subNameEn
+    }
+    val awayTeamName = if (!isMyTeamHome) {
+        if (isKorean) myTeam.teamName else myTeam.teamNameEn
+    } else {
+        if (isKorean) enemyTeam?.teamName else enemyTeam?.teamNameEn
+    }
+    val awayTeamSubName = if (!isMyTeamHome) {
+        if (isKorean) myTeam.subName else myTeam.subNameEn
+    } else {
+        if (isKorean) enemyTeam?.subName else enemyTeam?.subNameEn
+    }
     Column(
         modifier = Modifier
             .fillMaxWidth()
@@ -247,33 +270,33 @@ fun UpcomingGameItem(
             )
         }
         Spacer(modifier = Modifier.height(8.dp))
-        // 내팀 VS 상대팀
+        // Home VS Away
         Row(
             modifier = Modifier.fillMaxWidth(),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            // 내 팀
+            // Home Team
             Row(
                 modifier = Modifier.weight(1f),
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.Center
             ) {
                 Image(
-                    painter = painterResource(myTeam.mascot()),
+                    painter = homeMascot,
                     contentDescription = null,
                     modifier = Modifier.size(36.dp)
                 )
                 Spacer(modifier = Modifier.width(6.dp))
                 Column {
                     Text(
-                        text = if (isKorean) myTeam.teamName else myTeam.teamNameEn,
+                        text = homeTeamName ?: "",
                         fontSize = 12.sp,
                         lineHeight = 12.sp,
                         fontWeight = FontWeight.SemiBold,
                         color = MaterialTheme.colorScheme.onBackground
                     )
                     Text(
-                        text = if (isKorean) myTeam.subName else myTeam.subNameEn,
+                        text = homeTeamSubName ?: "",
                         fontSize = 9.sp,
                         lineHeight = 9.sp,
                         color = Color(0xFF999999)
@@ -300,7 +323,7 @@ fun UpcomingGameItem(
                 )
             }
 
-            // 상대 팀
+            // Away Team
             Row(
                 modifier = Modifier.weight(1f),
                 verticalAlignment = Alignment.CenterVertically,
@@ -308,14 +331,14 @@ fun UpcomingGameItem(
             ) {
                 Column(horizontalAlignment = Alignment.End) {
                     Text(
-                        text = if (isKorean) enemyTeam?.teamName ?: "" else enemyTeam?.teamNameEn ?: "",
+                        text = awayTeamName ?: "",
                         fontSize = 12.sp,
                         lineHeight = 12.sp,
                         fontWeight = FontWeight.SemiBold,
                         color = MaterialTheme.colorScheme.onBackground
                     )
                     Text(
-                        text = if (isKorean) enemyTeam?.subName ?: "" else enemyTeam?.subNameEn ?: "",
+                        text = awayTeamSubName ?: "",
                         fontSize = 9.sp,
                         lineHeight = 9.sp,
                         color = Color(0xFF999999)
@@ -323,7 +346,7 @@ fun UpcomingGameItem(
                 }
                 Spacer(modifier = Modifier.width(6.dp))
                 Image(
-                    painter = painterResource(enemyTeam?.mascot() ?: myTeam.mascot()),
+                    painter = awayMascot,
                     contentDescription = null,
                     modifier = Modifier.size(36.dp)
                 )
