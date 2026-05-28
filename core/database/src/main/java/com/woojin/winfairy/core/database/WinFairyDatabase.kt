@@ -20,7 +20,7 @@ import com.woojin.winfairy.core.database.entity.UserTeamEntity
         GameVariableEntity::class,
         UserTeamEntity::class,
     ],
-    version = 2,
+    version = 3,
     exportSchema = false
 )
 @TypeConverters(GameResultConverter::class)

@@ -24,7 +24,6 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBackIos
 import androidx.compose.material.icons.filled.Check
-import androidx.compose.material.icons.filled.Clear
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Download
 import androidx.compose.material.icons.filled.Remove
@@ -212,6 +211,7 @@ fun AddTicketScreen(
                     changeHomeTeam = { changeHomeTeam(it) },
                     changeAwayTeam = { changeAwayTeam(it) },
                     onDateSelected = { viewModel.updateRecordData(date = it) },
+                    onScoreSelected = { home, away -> viewModel.updateRecordData(homeScore = home, awayScore = away) },
                     recordData = recordData,
                     suggestions = suggestions,
                     onVariableChange = { index, value -> viewModel.updateVariable(index, value) },
@@ -238,6 +238,8 @@ fun AddTicketScreen(
                         viewModel.updateRecordData(
                             enemy = enemy,
                             gameResult = recordData.gameResult,
+                            homeScore = recordData.homeScore,
+                            awayScore = recordData.awayScore,
                             stadium = if (isKorean) selectedHomeTeam?.stadium else selectedHomeTeam?.stadiumEn,
                         )
                         if (selectedAwayTeam == null || selectedHomeTeam == null) {
@@ -309,6 +311,7 @@ fun MainTicket(
     changeHomeTeam: (KboTeam) -> Unit,
     changeAwayTeam: (KboTeam) -> Unit,
     onDateSelected: (String) -> Unit,
+    onScoreSelected: (Int, Int) -> Unit,
     recordData: RecordData,
     suggestions: Map<String, List<String>>,
     onVariableChange: (Int, String) -> Unit,
@@ -328,6 +331,7 @@ fun MainTicket(
             changeHomeTeam = { changeHomeTeam(it) },
             changeAwayTeam = { changeAwayTeam(it) },
             onDateSelected = { onDateSelected(it) },
+            onScoreSelected = { home, away -> onScoreSelected(home, away) },
             recordData = recordData,
             gameNo = gameNo,
         )
@@ -349,10 +353,13 @@ fun TicketTopInfo(
     changeHomeTeam: (KboTeam) -> Unit,
     changeAwayTeam: (KboTeam) -> Unit,
     onDateSelected: (String) -> Unit,
+    onScoreSelected: (Int, Int) -> Unit,
     recordData: RecordData,
     gameNo: Int,
 ) {
     val isKorean = java.util.Locale.getDefault().language == "ko"
+
+    var showScoreDialog by remember { mutableStateOf(false) }
     var showTeamSelectBottomSheet by remember { mutableStateOf(false) }
     var isHome by remember { mutableStateOf(true) } // 팀 선택 바텀시트 최초 선택되어있는 팀
 
@@ -367,7 +374,6 @@ fun TicketTopInfo(
             GameResult.WIN -> Pair("  *  WIN  *  ", Color(0xffd23838))
             GameResult.LOSE -> Pair("  X  LOSE  X  ", Color(0xff3a4658))
             GameResult.DRAW -> Pair("  =  DRAW  =  ", Color(0xff7a6b2e))
-            GameResult.CANCELED -> Pair("  ▼  CANCEL  ▼  ", Color(0xff8d6a3f))
         }
     }
     Column(
@@ -444,12 +450,35 @@ fun TicketTopInfo(
                     }
                 }
             }
-            Text(
-                text = "VS",
-                fontSize = 11.sp,
-                lineHeight = 11.sp,
-                color = Color(0xff9aa3ad),
-            )
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                modifier = Modifier.clickable { showScoreDialog = true }
+            ) {
+                Text(
+                    text = recordData.homeScore.toString(),
+                    fontSize = 30.sp,
+                    lineHeight = 30.sp,
+                    color = when {
+                        recordData.homeScore > recordData.awayScore -> Color.Red
+                        else -> Color(0xff9aa3ad)
+                    },
+                )
+                Text(
+                    text = ":",
+                    fontSize = 30.sp,
+                    lineHeight = 30.sp,
+                    color = Color.Black,
+                )
+                Text(
+                    text = recordData.awayScore.toString(),
+                    fontSize = 30.sp,
+                    lineHeight = 30.sp,
+                    color = when {
+                        recordData.awayScore > recordData.homeScore -> Color.Red
+                        else -> Color(0xff9aa3ad)
+                    }
+                )
+            }
             Row(
                 verticalAlignment = Alignment.CenterVertically,
                 modifier = Modifier.clickable {
@@ -608,6 +637,20 @@ fun TicketTopInfo(
                 showTeamSelectBottomSheet = false
             },
             onDismiss = { showTeamSelectBottomSheet = false }
+        )
+    }
+
+    if (showScoreDialog) {
+        ScorePickerDialog(
+            homeTeamName = selectedHomeTeam?.teamName ?: "",
+            awayTeamName = selectedAwayTeam?.teamName ?: "",
+            initialHomeScore = recordData.homeScore,
+            initialAwayScore = recordData.awayScore,
+            onConfirm = { home, away ->
+                onScoreSelected(home, away)
+                showScoreDialog = false
+            },
+            onDismiss = { showScoreDialog = false }
         )
     }
 }
@@ -803,13 +846,11 @@ fun ChooseGameResult(
                     GameResult.WIN -> stringResource(R.string.win)
                     GameResult.LOSE -> stringResource(R.string.lose)
                     GameResult.DRAW -> stringResource(R.string.draw)
-                    GameResult.CANCELED -> stringResource(R.string.cancel)
                 }
                 val icon = when (result) {
                     GameResult.WIN -> Icons.Default.Check
                     GameResult.LOSE -> Icons.Default.Close
                     GameResult.DRAW -> Icons.Default.Remove
-                    GameResult.CANCELED -> Icons.Default.Clear
                 }
 
                 Column(

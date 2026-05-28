@@ -6,6 +6,8 @@ data class GameRecord(
     val opponentTeam: String,
     val stadium: String,
     val result: GameResult,
+    val homeScore: Int,
+    val awayScore: Int,
     val memo: String? = null,
     val createdAt: Long = 0
 )

@@ -35,8 +35,6 @@ class CheckAchievementsUseCase @Inject constructor() {
                         }
                     }
                 }
-            } else if (it.record.result != GameResult.CANCELED) {
-                currentStreak = 0
             }
         }
 
@@ -86,7 +84,6 @@ class CheckAchievementsUseCase @Inject constructor() {
         // 이달의 요정
         var perfectMonthDate: String? = null
         sortedRecords
-            .filter { it.record.result != GameResult.CANCELED }
             .groupBy { it.record.date.substring(0, 7) }
             .forEach { (month, monthRecords) ->
                 if (monthRecords.size >= 3 && monthRecords.all { it.record.result == GameResult.WIN } && perfectMonthDate == null) {

@@ -11,6 +11,8 @@ fun GameRecordEntity.toDomain(): GameRecord = GameRecord(
     opponentTeam = opponentTeam,
     stadium = stadium,
     result = result,
+    homeScore = homeScore,
+    awayScore = awayScore,
     memo = memo,
 )
 
@@ -20,6 +22,8 @@ fun GameRecord.toEntity(): GameRecordEntity = GameRecordEntity(
     opponentTeam = opponentTeam,
     stadium = stadium,
     result = result,
+    homeScore = homeScore,
+    awayScore = awayScore,
     memo = memo,
 )
 

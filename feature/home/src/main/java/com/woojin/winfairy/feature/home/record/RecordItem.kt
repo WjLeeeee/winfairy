@@ -82,13 +82,11 @@ fun RecordItem(
                     GameResult.WIN -> stringResource(R.string.win)
                     GameResult.LOSE -> stringResource(R.string.lose)
                     GameResult.DRAW -> stringResource(R.string.draw)
-                    GameResult.CANCELED -> stringResource(R.string.cancel)
                 }
                 val tagColor = when (record.result) {
                     GameResult.WIN -> MaterialTheme.colorScheme.primary
                     GameResult.LOSE -> Color(0xFF888888)
                     GameResult.DRAW -> Color(0xFFCCCCCC)
-                    GameResult.CANCELED -> Color(0xFFCCCCCC)
                 }
                 Box(
                     modifier = Modifier

@@ -273,7 +273,6 @@ fun RecentGameResultBadge(gameRecord: GameRecord) {
         GameResult.WIN -> "W"
         GameResult.LOSE -> "L"
         GameResult.DRAW -> "D"
-        GameResult.CANCELED -> "C"
     }
     Box(
         modifier = Modifier

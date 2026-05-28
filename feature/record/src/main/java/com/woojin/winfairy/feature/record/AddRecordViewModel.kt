@@ -61,7 +61,9 @@ class AddRecordViewModel @Inject constructor(
                     selectedDate = upComingData.date,
                     selectedEnemy = KboTeam.entries.find { it.name == upComingData.opponentTeam },
                     selectedStadium = upComingData.stadium,
-                    gameResult = GameResult.WIN,
+                    gameResult = GameResult.DRAW,
+                    homeScore = 0,
+                    awayScore = 0,
                     variables = VariableCategory.entries.map { category ->
                         val categoryName = if (isKorean) category.displayName else category.displayNameEn
                         VariableInput(
@@ -91,6 +93,8 @@ class AddRecordViewModel @Inject constructor(
                 selectedEnemy = KboTeam.entries.find { it.name == record.opponentTeam },
                 selectedStadium = record.stadium,
                 gameResult = record.result,
+                homeScore = record.homeScore,
+                awayScore = record.awayScore,
                 variables = VariableCategory.entries.map { category ->
                     val categoryName = if (isKorean) category.displayName else category.displayNameEn
                     val categoryValues = variables.filter { it.category == categoryName }
@@ -164,13 +168,17 @@ class AddRecordViewModel @Inject constructor(
         enemy: KboTeam? = null,
         stadium: String? = null,
         gameResult: GameResult? = null,
+        homeScore: Int? = null,
+        awayScore: Int? = null,
     ) {
         _recordData.update { recordData ->
             recordData.copy(
                 selectedDate = date ?: recordData.selectedDate,
                 selectedEnemy = enemy ?: recordData.selectedEnemy,
                 selectedStadium = stadium ?: recordData.selectedStadium,
-                gameResult = gameResult ?: recordData.gameResult
+                gameResult = gameResult ?: recordData.gameResult,
+                homeScore = homeScore ?: recordData.homeScore,
+                awayScore = awayScore ?: recordData.awayScore,
             )
         }
     }
@@ -194,6 +202,8 @@ class AddRecordViewModel @Inject constructor(
                 opponentTeam = data.selectedEnemy?.name ?: "",
                 stadium = data.selectedStadium,
                 result = data.gameResult,
+                homeScore = data.homeScore,
+                awayScore = data.awayScore,
                 memo = ""
             )
             val variables = data.variables.flatMap { variable ->

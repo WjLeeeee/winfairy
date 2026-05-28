@@ -15,7 +15,6 @@ class AnalyzeAllVariablesUseCase @Inject constructor() {
         val categoryStadium = if (isKorean) "구장" else "Stadium"
         records.forEach { recordWithVars ->
             val result = recordWithVars.record.result
-            if (result == GameResult.CANCELED) return@forEach
 
             // 상대팀
             allPairs.add(categoryOpponent to ("vs ${recordWithVars.record.opponentTeam}" to result))

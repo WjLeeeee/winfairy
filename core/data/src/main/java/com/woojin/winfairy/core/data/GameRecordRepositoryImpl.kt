@@ -1,6 +1,5 @@
 package com.woojin.winfairy.core.data
 
-import androidx.lifecycle.liveData
 import com.woojin.winfairy.core.data.mapper.toDomain
 import com.woojin.winfairy.core.data.mapper.toEntity
 import com.woojin.winfairy.core.database.dao.GameRecordDao

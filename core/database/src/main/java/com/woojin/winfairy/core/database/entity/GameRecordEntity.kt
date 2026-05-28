@@ -12,6 +12,8 @@ data class GameRecordEntity(
     val opponentTeam: String,
     val stadium: String,
     val result: GameResult,
+    val homeScore: Int,
+    val awayScore: Int,
     val memo: String? = null,
     val createAt: Long = System.currentTimeMillis()
 )
