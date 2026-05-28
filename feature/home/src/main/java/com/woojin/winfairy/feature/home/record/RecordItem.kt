@@ -16,7 +16,11 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowForwardIos
+import androidx.compose.material.icons.filled.Home
 import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -88,6 +92,29 @@ fun RecordItem(
                     GameResult.LOSE -> Color(0xFF888888)
                     GameResult.DRAW -> Color(0xFFCCCCCC)
                 }
+                val isMyTeamHome = record.stadium == myTeam.stadium || record.stadium == myTeam.stadiumEn
+                val homeTeamMascot = painterResource(if (isMyTeamHome) myTeam.mascot() else enemyTeam?.mascot() ?: myTeam.mascot())
+                val awayTeamMascot = painterResource(if (!isMyTeamHome) myTeam.mascot() else enemyTeam?.mascot() ?: myTeam.mascot())
+                val homeTeamName = if (isMyTeamHome) {
+                    if (isKorean) myTeam.teamName else myTeam.teamNameEn
+                } else {
+                    if (isKorean) enemyTeam?.teamName else enemyTeam?.teamNameEn
+                }
+                val homeTeamSubName = if (isMyTeamHome) {
+                    if (isKorean) myTeam.subName else myTeam.subNameEn
+                } else {
+                    if (isKorean) enemyTeam?.subName else enemyTeam?.subNameEn
+                }
+                val awayTeamName = if (!isMyTeamHome) {
+                    if (isKorean) myTeam.teamName else myTeam.teamNameEn
+                } else {
+                    if (isKorean) enemyTeam?.teamName else enemyTeam?.teamNameEn
+                }
+                val awayTeamSubName = if (!isMyTeamHome) {
+                    if (isKorean) myTeam.subName else myTeam.subNameEn
+                } else {
+                    if (isKorean) enemyTeam?.subName else enemyTeam?.subNameEn
+                }
                 Box(
                     modifier = Modifier
                         .fillMaxWidth()
@@ -112,7 +139,7 @@ fun RecordItem(
                         )
                     }
                     // 카드 본체
-                    Row(
+                    Box(
                         modifier = Modifier
                             .fillMaxWidth()
                             .padding(top = 27.dp)
@@ -123,108 +150,132 @@ fun RecordItem(
                                 shape = RoundedCornerShape(0.dp, 12.dp, 12.dp, 12.dp)
                             )
                             .background(Color.White)
-                            .padding(vertical = 14.dp, horizontal = 12.dp),
-                        verticalAlignment = Alignment.CenterVertically
                     ) {
-                        // 내 팀
+                        Icon(
+                            imageVector = Icons.Default.Home,
+                            contentDescription = null,
+                            tint = Color(0xff9aa3ad),
+                            modifier = Modifier
+                                .size(30.dp)
+                                .padding(start = 12.dp, top = 6.dp)
+                        )
                         Row(
-                            modifier = Modifier.weight(1f),
-                            verticalAlignment = Alignment.CenterVertically,
-                            horizontalArrangement = Arrangement.Center
+                            modifier = Modifier
+                                .padding(vertical = 14.dp, horizontal = 12.dp),
+                            verticalAlignment = Alignment.CenterVertically
                         ) {
-                            Image(
-                                painter = painterResource(myTeam.mascot()),
-                                contentDescription = null,
-                                modifier = Modifier
-                                    .size(55.dp)
-                                    .alpha(
-                                        when (record.result) {
-                                            GameResult.LOSE -> 0.4f
-                                            else -> 1f
-                                        }
+                            // Home
+                            Row(
+                                modifier = Modifier.weight(1f),
+                                verticalAlignment = Alignment.CenterVertically,
+                                horizontalArrangement = Arrangement.Center
+                            ) {
+                                Image(
+                                    painter = homeTeamMascot,
+                                    contentDescription = null,
+                                    modifier = Modifier
+                                        .size(55.dp)
+                                        .alpha(
+                                            when (record.result) {
+                                                GameResult.LOSE -> 0.4f
+                                                else -> 1f
+                                            }
+                                        )
+                                )
+                                Spacer(modifier = Modifier.width(6.dp))
+                                Column {
+                                    Text(
+                                        text = homeTeamName ?: "",
+                                        fontSize = 14.sp,
+                                        fontWeight = FontWeight.SemiBold,
+                                        color = if (record.result == GameResult.WIN) MaterialTheme.colorScheme.onBackground else Color(
+                                            0xFF888888
+                                        ),
+                                        lineHeight = 14.sp
                                     )
-                            )
-                            Spacer(modifier = Modifier.width(6.dp))
-                            Column {
+                                    Text(
+                                        text = homeTeamSubName ?: "",
+                                        fontSize = 11.sp,
+                                        color = if (record.result == GameResult.WIN) Color(0xFF999999) else Color(
+                                            0xFFBBBBBB
+                                        ),
+                                        lineHeight = 11.sp
+                                    )
+                                }
+                            }
+
+                            // 점수
+                            Row(
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
                                 Text(
-                                    text = if (isKorean) myTeam.teamName else myTeam.teamNameEn,
-                                    fontSize = 14.sp,
-                                    fontWeight = FontWeight.SemiBold,
-                                    color = if (record.result == GameResult.WIN) MaterialTheme.colorScheme.onBackground else Color(
-                                        0xFF888888
-                                    ),
-                                    lineHeight = 14.sp
+                                    text = record.homeScore.toString(),
+                                    fontSize = 16.sp,
+                                    fontWeight = FontWeight.Medium,
+                                    color = when {
+                                        record.homeScore > record.awayScore -> Color.Red
+                                        else -> Color(0xff9aa3ad)
+                                    },
+                                    lineHeight = 16.sp
                                 )
                                 Text(
-                                    text = if (isKorean) myTeam.subName else myTeam.subNameEn,
-                                    fontSize = 11.sp,
-                                    color = if (record.result == GameResult.WIN) Color(0xFF999999) else Color(
-                                        0xFFBBBBBB
-                                    ),
-                                    lineHeight = 11.sp
+                                    text = ":",
+                                    fontSize = 16.sp,
+                                    fontWeight = FontWeight.Medium,
+                                    color = Color(0xff9aa3ad),
+                                    lineHeight = 16.sp
+                                )
+                                Text(
+                                    text = record.awayScore.toString(),
+                                    fontSize = 16.sp,
+                                    fontWeight = FontWeight.Medium,
+                                    color = when {
+                                        record.awayScore > record.homeScore -> Color.Red
+                                        else -> Color(0xff9aa3ad)
+                                    },
+                                    lineHeight = 16.sp
                                 )
                             }
-                        }
 
-                        // VS + 구장
-                        Column(
-                            horizontalAlignment = Alignment.CenterHorizontally
-                        ) {
-                            Text(
-                                text = "VS",
-                                fontSize = 13.sp,
-                                fontWeight = FontWeight.Medium,
-                                color = Color(0xFFCCCCCC),
-                                lineHeight = 13.sp
-                            )
-                            Text(
-                                text = record.stadium,
-                                fontSize = 10.sp,
-                                color = Color(0xFFCCCCCC),
-                                lineHeight = 10.sp
-                            )
-                        }
-
-                        // 상대 팀
-                        Row(
-                            modifier = Modifier.weight(1f),
-                            verticalAlignment = Alignment.CenterVertically,
-                            horizontalArrangement = Arrangement.Center
-                        ) {
-                            Column(horizontalAlignment = Alignment.End) {
-                                Text(
-                                    text = if (isKorean) enemyTeam?.teamName ?: record.opponentTeam
-                                    else enemyTeam?.teamNameEn ?: record.opponentTeam,
-                                    fontSize = 14.sp,
-                                    fontWeight = FontWeight.SemiBold,
-                                    color = if (record.result == GameResult.LOSE) MaterialTheme.colorScheme.onBackground else Color(
-                                        0xFF888888
-                                    ),
-                                    lineHeight = 14.sp
-                                )
-                                Text(
-                                    text = if (isKorean) enemyTeam?.subName ?: ""
-                                    else enemyTeam?.subNameEn ?: "",
-                                    fontSize = 11.sp,
-                                    color = if (record.result == GameResult.LOSE) Color(0xFF999999) else Color(
-                                        0xFFBBBBBB
-                                    ),
-                                    lineHeight = 11.sp
+                            // 상대 팀
+                            Row(
+                                modifier = Modifier.weight(1f),
+                                verticalAlignment = Alignment.CenterVertically,
+                                horizontalArrangement = Arrangement.Center
+                            ) {
+                                Column(horizontalAlignment = Alignment.End) {
+                                    Text(
+                                        text = awayTeamName ?: "",
+                                        fontSize = 14.sp,
+                                        fontWeight = FontWeight.SemiBold,
+                                        color = if (record.result == GameResult.LOSE) MaterialTheme.colorScheme.onBackground else Color(
+                                            0xFF888888
+                                        ),
+                                        lineHeight = 14.sp
+                                    )
+                                    Text(
+                                        text = awayTeamSubName ?: "",
+                                        fontSize = 11.sp,
+                                        color = if (record.result == GameResult.LOSE) Color(0xFF999999) else Color(
+                                            0xFFBBBBBB
+                                        ),
+                                        lineHeight = 11.sp
+                                    )
+                                }
+                                Spacer(modifier = Modifier.width(6.dp))
+                                Image(
+                                    painter = awayTeamMascot,
+                                    contentDescription = null,
+                                    modifier = Modifier
+                                        .size(55.dp)
+                                        .alpha(
+                                            when (record.result) {
+                                                GameResult.WIN -> 0.4f
+                                                else -> 1f
+                                            }
+                                        )
                                 )
                             }
-                            Spacer(modifier = Modifier.width(6.dp))
-                            Image(
-                                painter = painterResource(enemyTeam?.mascot() ?: myTeam.mascot()),
-                                contentDescription = null,
-                                modifier = Modifier
-                                    .size(55.dp)
-                                    .alpha(
-                                        when (record.result) {
-                                            GameResult.WIN -> 0.4f
-                                            else -> 1f
-                                        }
-                                    )
-                            )
                         }
                     }
                 }
