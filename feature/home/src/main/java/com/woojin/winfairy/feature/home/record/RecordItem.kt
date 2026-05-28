@@ -164,7 +164,7 @@ fun RecordItem(
                                 .padding(vertical = 14.dp, horizontal = 12.dp),
                             verticalAlignment = Alignment.CenterVertically
                         ) {
-                            // Home
+                            // Home Team
                             Row(
                                 modifier = Modifier.weight(1f),
                                 verticalAlignment = Alignment.CenterVertically,
@@ -237,7 +237,7 @@ fun RecordItem(
                                 )
                             }
 
-                            // 상대 팀
+                            // Away Team
                             Row(
                                 modifier = Modifier.weight(1f),
                                 verticalAlignment = Alignment.CenterVertically,
