@@ -2,6 +2,7 @@ package com.woojin.winfairy.feature.record
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -102,9 +103,18 @@ fun ScrollScorePicker(
     LaunchedEffect(listState.isScrollInProgress) {
         if (!listState.isScrollInProgress) {
             val index = listState.firstVisibleItemIndex
-            onScoreChange(scores[index.coerceIn(0, scores.lastIndex)])
+            val offset = listState.firstVisibleItemScrollOffset
+            val itemHeight = 54.dp.value // 아이템 높이와 동일하게
+
+            val targetIndex = if (offset > itemHeight / 2) {
+                (index + 1).coerceAtMost(scores.lastIndex)
+            } else {
+                index
+            }
+
+            onScoreChange(scores[targetIndex])
             coroutineScope.launch {
-                listState.animateScrollToItem(index.coerceIn(0, scores.lastIndex))
+                listState.animateScrollToItem(targetIndex)
             }
         }
     }
@@ -122,8 +132,10 @@ fun ScrollScorePicker(
                 .size(32.dp)
                 .clip(CircleShape)
                 .clickable(enabled = score < 30) {
+                    val newScore = (score + 1).coerceAtMost(30)
+                    onScoreChange(newScore)
                     coroutineScope.launch {
-                        listState.animateScrollToItem((score + 1).coerceAtMost(30))
+                        listState.animateScrollToItem(newScore)
                     }
                 }
         )
@@ -136,13 +148,19 @@ fun ScrollScorePicker(
             userScrollEnabled = true
         ) {
             items(scores) { s ->
-                Text(
-                    text = "%02d".format(s),
-                    fontSize = 36.sp,
-                    fontWeight = FontWeight.Medium,
-                    color = if (s == score) Color.Black else Color.LightGray,
-                    modifier = Modifier.height(54.dp)
-                )
+                Box(
+                    modifier = Modifier
+                        .height(54.dp)
+                        .width(60.dp),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Text(
+                        text = "%02d".format(s),
+                        fontSize = 36.sp,
+                        fontWeight = FontWeight.Medium,
+                        color = if (s == score) Color.Black else Color.LightGray,
+                    )
+                }
             }
         }
         Icon(
@@ -153,8 +171,10 @@ fun ScrollScorePicker(
                 .size(32.dp)
                 .clip(CircleShape)
                 .clickable(enabled = score > 0) {
+                    val newScore = (score - 1).coerceAtLeast(0)
+                    onScoreChange(newScore)
                     coroutineScope.launch {
-                        listState.animateScrollToItem((score - 1).coerceAtLeast(0))
+                        listState.animateScrollToItem(newScore)
                     }
                 }
         )
