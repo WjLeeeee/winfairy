@@ -60,9 +60,6 @@ fun UpComingMatchItem(
     recordItem: (Long) -> Unit = {},
 ) {
     var isExpanded by remember { mutableStateOf(false) }
-    LaunchedEffect(upcomingGames) {
-        isExpanded = upcomingGames.isNotEmpty()
-    }
 
     Column(
         modifier = modifier
