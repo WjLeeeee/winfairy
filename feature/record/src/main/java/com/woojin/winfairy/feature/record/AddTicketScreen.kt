@@ -124,6 +124,7 @@ fun AddTicketScreen(
     var selectedHomeTeam by remember { mutableStateOf<KboTeam?>(selectedTeam) }
     var selectedAwayTeam by remember { mutableStateOf<KboTeam?>(null) }
 
+    // 홈 팀 변경 시
     val changeHomeTeam: (KboTeam) -> Unit = { team ->
         selectedHomeTeam = team
         if (team != selectedTeam && selectedAwayTeam != selectedTeam) {
@@ -134,7 +135,7 @@ fun AddTicketScreen(
         }
         viewModel.updateIsMyTeamHome(team == selectedTeam)
     }
-
+    //어웨이 팀 변경 시
     val changeAwayTeam: (KboTeam) -> Unit = { team ->
         selectedAwayTeam = team
         if (team != selectedTeam && selectedHomeTeam != selectedTeam) {
@@ -146,6 +147,7 @@ fun AddTicketScreen(
         }
     }
 
+    //화면 진입 타입에 따른 기본값 설정
     LaunchedEffect(Unit) {
         when {
             recordId != null -> viewModel.loadRecord(recordId, isKorean(), selectedTeam) //편집 모드

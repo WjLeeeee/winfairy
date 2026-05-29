@@ -47,6 +47,7 @@ class AddRecordViewModel @Inject constructor(
     private var isAddUpComingGame = false
     private var upComingGameId: Long = 0
 
+    /** 직관 예정 경기 기록 */
     fun loadUpComingData(id: Long, isKorean: Boolean, myTeam: KboTeam) {
         viewModelScope.launch {
             val upComingData = getUpComingGameByIdUseCase(id)
@@ -80,6 +81,7 @@ class AddRecordViewModel @Inject constructor(
         }
     }
 
+    /** 편집 모드 로딩 */
     fun loadRecord(recordId: Long, isKorean: Boolean, myTeam: KboTeam) {
         viewModelScope.launch {
             val record = getRecordByIdUseCase(recordId) ?: return@launch
@@ -112,6 +114,7 @@ class AddRecordViewModel @Inject constructor(
         }
     }
 
+    /** 변수 가져오기 */
     fun loadSuggestions() {
         viewModelScope.launch {
             val result = mutableMapOf<String, List<String>>()
@@ -126,6 +129,7 @@ class AddRecordViewModel @Inject constructor(
         }
     }
 
+    /** 변수 추가 */
     fun addVariableValue(index: Int, value: String) {
         _recordData.update { data ->
             data.copy(
@@ -139,6 +143,7 @@ class AddRecordViewModel @Inject constructor(
         }
     }
 
+    /** 변수 삭제 */
     fun removeVariableValue(index: Int, value: String) {
         _recordData.update { data ->
             data.copy(
