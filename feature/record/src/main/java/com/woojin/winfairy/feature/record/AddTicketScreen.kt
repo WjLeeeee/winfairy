@@ -60,6 +60,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
+import com.woojin.winfairy.core.common.isKorean
 import com.woojin.winfairy.core.model.GameResult
 import com.woojin.winfairy.core.model.KboTeam
 import com.woojin.winfairy.core.ui.mascot
@@ -78,7 +79,6 @@ fun AddTicketScreen(
     viewModel: AddRecordViewModel = hiltViewModel()
 ) {
     val context = LocalContext.current
-    val isKorean = java.util.Locale.getDefault().language == "ko"
     val view = LocalView.current
     var ticketCoordinates by remember { mutableStateOf<LayoutCoordinates?>(null) }
     var triggerShare by remember { mutableStateOf(false) }
@@ -132,12 +132,14 @@ fun AddTicketScreen(
         if (team == selectedTeam && selectedAwayTeam == selectedTeam) {
             selectedAwayTeam = null
         }
+        viewModel.updateIsMyTeamHome(team == selectedTeam)
     }
 
     val changeAwayTeam: (KboTeam) -> Unit = { team ->
         selectedAwayTeam = team
         if (team != selectedTeam && selectedHomeTeam != selectedTeam) {
             selectedHomeTeam = selectedTeam
+            viewModel.updateIsMyTeamHome(true)
         }
         if (team == selectedTeam && selectedHomeTeam == selectedTeam) {
             selectedHomeTeam = null
@@ -146,30 +148,26 @@ fun AddTicketScreen(
 
     LaunchedEffect(Unit) {
         when {
-            recordId != null -> viewModel.loadRecord(recordId, isKorean) //편집 모드
+            recordId != null -> viewModel.loadRecord(recordId, isKorean(), selectedTeam) //편집 모드
             upComingGameId != null -> viewModel.loadUpComingData(
                 upComingGameId,
-                isKorean,
+                isKorean(),
                 selectedTeam
             ) //예정 경기 저장
             else -> {
-                viewModel.initVariables(isKorean)
+                viewModel.initVariables(isKorean())
                 viewModel.updateRecordData(
-                    stadium = if (isKorean) selectedTeam.stadium else selectedTeam.stadiumEn
+                    stadium = if (isKorean()) selectedTeam.stadium else selectedTeam.stadiumEn
                 )
             }
         }
         viewModel.loadSuggestions()
     }
 
-    // 편집모드일 때 로드된 enemy로 교체
-    LaunchedEffect(recordData.selectedEnemy) {
-        recordData.selectedEnemy?.let { selectedAwayTeam = it }
-    }
-
     //직관 예정 경기 기록 시, 저장된 상대팀과 홈팀 여부를 가지고 홈,어웨이 설정
     LaunchedEffect(isMyTeamHome, recordData.selectedEnemy) {
         val enemy = recordData.selectedEnemy ?: return@LaunchedEffect
+        if (recordId == null && upComingGameId == null) return@LaunchedEffect
         if (isMyTeamHome) {
             selectedHomeTeam = selectedTeam
             selectedAwayTeam = enemy
@@ -203,24 +201,15 @@ fun AddTicketScreen(
                 }
             ) {
                 MainTicket(
+                    isMyTeamHome = isMyTeamHome,
                     selectedHomeTeam = selectedHomeTeam,
                     selectedAwayTeam = selectedAwayTeam,
                     changeHomeTeam = { changeHomeTeam(it) },
                     changeAwayTeam = { changeAwayTeam(it) },
                     onDateSelected = { viewModel.updateRecordData(date = it) },
                     onScoreSelected = { home, away ->
-                        val result = when {
-                            home > away -> GameResult.WIN
-                            home < away -> GameResult.LOSE
-                            else -> GameResult.DRAW
-                        }
-                        viewModel.updateRecordData(
-                            homeScore = home,
-                            awayScore = away,
-                            gameResult = result
-                        )
+                        viewModel.updateScore(home, away)
                     },
-                    changeScore = { result -> viewModel.updateRecordData(gameResult = result) },
                     recordData = recordData,
                     suggestions = suggestions,
                     onVariableChange = { index, value -> viewModel.updateVariable(index, value) },
@@ -238,20 +227,19 @@ fun AddTicketScreen(
                     .clip(RoundedCornerShape(8.dp))
                     .background(MaterialTheme.colorScheme.primary)
                     .clickable {
-                        val enemy =
-                            if (selectedHomeTeam == selectedTeam) selectedAwayTeam else selectedHomeTeam
+                        if (selectedAwayTeam == null || selectedHomeTeam == null) {
+                            Toast.makeText(
+                                context, R.string.choose_enemy_team, Toast.LENGTH_SHORT
+                            ).show()
+                            return@clickable
+                        }
                         viewModel.updateRecordData(
-                            enemy = enemy,
+                            enemy = if (isMyTeamHome) selectedAwayTeam else selectedHomeTeam,
                             gameResult = recordData.gameResult,
                             homeScore = recordData.homeScore,
                             awayScore = recordData.awayScore,
-                            stadium = if (isKorean) selectedHomeTeam?.stadium else selectedHomeTeam?.stadiumEn,
+                            stadium = if (isKorean()) selectedHomeTeam?.stadium else selectedHomeTeam?.stadiumEn,
                         )
-                        if (selectedAwayTeam == null || selectedHomeTeam == null) {
-                            Toast.makeText(context, R.string.choose_enemy_team, Toast.LENGTH_SHORT)
-                                .show()
-                            return@clickable
-                        }
                         viewModel.saveRecord { onComplete() }
                     }
                     .padding(vertical = 12.dp),
@@ -311,13 +299,13 @@ fun TopLayout(
 
 @Composable
 fun MainTicket(
+    isMyTeamHome: Boolean,
     selectedHomeTeam: KboTeam?,
     selectedAwayTeam: KboTeam?,
     changeHomeTeam: (KboTeam) -> Unit,
     changeAwayTeam: (KboTeam) -> Unit,
     onDateSelected: (String) -> Unit,
     onScoreSelected: (Int, Int) -> Unit,
-    changeScore: (GameResult) -> Unit,
     recordData: RecordData,
     suggestions: Map<String, List<String>>,
     onVariableChange: (Int, String) -> Unit,
@@ -332,13 +320,13 @@ fun MainTicket(
             .background(Color(0xfffefbf4))
     ) {
         TicketTopInfo(
+            isMyTeamHome = isMyTeamHome,
             selectedHomeTeam = selectedHomeTeam,
             selectedAwayTeam = selectedAwayTeam,
             changeHomeTeam = { changeHomeTeam(it) },
             changeAwayTeam = { changeAwayTeam(it) },
             onDateSelected = { onDateSelected(it) },
             onScoreSelected = { home, away -> onScoreSelected(home, away) },
-            changeGameResult = { result -> changeScore(result) },
             recordData = recordData,
             gameNo = gameNo,
         )
@@ -355,18 +343,16 @@ fun MainTicket(
 
 @Composable
 fun TicketTopInfo(
+    isMyTeamHome: Boolean,
     selectedHomeTeam: KboTeam?,
     selectedAwayTeam: KboTeam?,
     changeHomeTeam: (KboTeam) -> Unit,
     changeAwayTeam: (KboTeam) -> Unit,
     onDateSelected: (String) -> Unit,
     onScoreSelected: (Int, Int) -> Unit,
-    changeGameResult: (GameResult) -> Unit,
     recordData: RecordData,
     gameNo: Int,
 ) {
-    val isKorean = java.util.Locale.getDefault().language == "ko"
-
     var showScoreDialog by remember { mutableStateOf(false) }
     var showTeamSelectBottomSheet by remember { mutableStateOf(false) }
     var isHome by remember { mutableStateOf(true) } // 팀 선택 바텀시트 최초 선택되어있는 팀
@@ -377,11 +363,19 @@ fun TicketTopInfo(
     val formatter = DateTimeFormatter.ofPattern("yyyy년 M월 d일 (E)", Locale.KOREAN)
     //------------------
 
-    val stampInfo = remember(recordData.homeScore, recordData.awayScore) {
-        when {
-            recordData.homeScore > recordData.awayScore -> Pair("  *  WIN  *  ", Color(0xffd23838))
-            recordData.homeScore < recordData.awayScore -> Pair("  X  LOSE  X  ", Color(0xff3a4658))
-            else -> Pair("  =  DRAW  =  ", Color(0xff7a6b2e))
+    val stampInfo = remember(recordData.homeScore, recordData.awayScore, isMyTeamHome) {
+        if (isMyTeamHome) {
+            when {
+                recordData.homeScore > recordData.awayScore -> Pair("  *  WIN  *  ", Color(0xffd23838))
+                recordData.homeScore < recordData.awayScore -> Pair("  X  LOSE  X  ", Color(0xff3a4658))
+                else -> Pair("  =  DRAW  =  ", Color(0xff7a6b2e))
+            }
+        } else {
+            when {
+                recordData.homeScore < recordData.awayScore -> Pair("  *  WIN  *  ", Color(0xffd23838))
+                recordData.homeScore > recordData.awayScore -> Pair("  X  LOSE  X  ", Color(0xff3a4658))
+                else -> Pair("  =  DRAW  =  ", Color(0xff7a6b2e))
+            }
         }
     }
     Column(
@@ -430,7 +424,7 @@ fun TicketTopInfo(
                     )
                     Text(
                         text = if (selectedHomeTeam != null) {
-                            if (isKorean) selectedHomeTeam.teamName else selectedHomeTeam.teamNameEn
+                            if (isKorean()) selectedHomeTeam.teamName else selectedHomeTeam.teamNameEn
                         } else "",
                         fontSize = 22.sp,
                         lineHeight = 22.sp,
@@ -523,7 +517,7 @@ fun TicketTopInfo(
                     )
                     Text(
                         text = if (selectedAwayTeam != null) {
-                            if (isKorean) selectedAwayTeam.teamName else selectedAwayTeam.teamNameEn
+                            if (isKorean()) selectedAwayTeam.teamName else selectedAwayTeam.teamNameEn
                         } else stringResource(R.string.select),
                         fontSize = 22.sp,
                         lineHeight = 22.sp,
@@ -568,7 +562,7 @@ fun TicketTopInfo(
                 )
                 Text(
                     text = if (selectedHomeTeam != null) {
-                        if (isKorean) selectedHomeTeam.stadium else selectedHomeTeam.stadiumEn
+                        if (isKorean()) selectedHomeTeam.stadium else selectedHomeTeam.stadiumEn
                     } else "-",
                     fontSize = 13.sp,
                     lineHeight = 13.sp,

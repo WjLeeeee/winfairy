@@ -60,7 +60,6 @@ fun shareTicket(
 
         ShareClient.instance.uploadImage(image = file) { result, error ->
             if (error != null) {
-                Log.e("woojinCheck", "업로드 실패: $error")
                 return@uploadImage
             }
             val imageUrl = result?.infos?.original?.url ?: return@uploadImage
@@ -90,7 +89,6 @@ fun shareTicket(
             if (ShareClient.instance.isKakaoTalkSharingAvailable(context)) {
                 ShareClient.instance.shareDefault(context, defaultFeed) { sharingResult, shareError ->
                     if (shareError != null) {
-                        Log.e("woojinCheck", "공유 실패: $shareError")
                     } else {
                         context.startActivity(sharingResult!!.intent)
                     }
@@ -128,7 +126,6 @@ fun saveTicketToGallery(
                 } ?: onFailure()
             }
         } catch (e: Exception) {
-            Log.e("woojinCheck", "갤러리 저장 실패: $e")
             onFailure()
         }
     }

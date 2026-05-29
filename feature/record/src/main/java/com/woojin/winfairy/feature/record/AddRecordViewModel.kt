@@ -80,7 +80,7 @@ class AddRecordViewModel @Inject constructor(
         }
     }
 
-    fun loadRecord(recordId: Long, isKorean: Boolean) {
+    fun loadRecord(recordId: Long, isKorean: Boolean, myTeam: KboTeam) {
         viewModelScope.launch {
             val record = getRecordByIdUseCase(recordId) ?: return@launch
             val variables = getVariablesByRecordIdUseCase(recordId)
@@ -106,6 +106,9 @@ class AddRecordViewModel @Inject constructor(
                     )
                 }
             )
+
+            val myTeamStadium = if (isKorean) myTeam.stadium else myTeam.stadiumEn
+            _isMyTeamHome.value = record.stadium == myTeamStadium
         }
     }
 
@@ -183,6 +186,7 @@ class AddRecordViewModel @Inject constructor(
         }
     }
 
+    /** 변수 저장 */
     fun updateVariable(index: Int, value: String) {
         _recordData.update { recordData ->
             recordData.copy(
@@ -193,6 +197,7 @@ class AddRecordViewModel @Inject constructor(
         }
     }
 
+    /** 기록 저장 */
     fun saveRecord(onSuccess: () -> Unit) {
         viewModelScope.launch {
             val data = _recordData.value
@@ -227,5 +232,30 @@ class AddRecordViewModel @Inject constructor(
 
             onSuccess()
         }
+    }
+
+    /** 점수 선택 시 update */
+    fun updateScore(homeScore: Int, awayScore: Int) {
+        val result = if (isMyTeamHome.value) {
+            when {
+                homeScore > awayScore -> GameResult.WIN
+                homeScore < awayScore -> GameResult.LOSE
+                else -> GameResult.DRAW
+            }
+        } else {
+            when {
+                homeScore < awayScore -> GameResult.WIN
+                homeScore > awayScore -> GameResult.LOSE
+                else -> GameResult.DRAW
+            }
+        }
+        _recordData.update {
+            it.copy(homeScore = homeScore, awayScore = awayScore, gameResult = result)
+        }
+    }
+
+    /** Home,Away 선택 후 마이팀이 홈 인지 여부 저장 */
+    fun updateIsMyTeamHome(isHome: Boolean) {
+        _isMyTeamHome.value = isHome
     }
 }
