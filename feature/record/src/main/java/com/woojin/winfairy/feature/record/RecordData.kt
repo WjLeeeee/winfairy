@@ -8,7 +8,7 @@ data class RecordData(
     val selectedDate: String = LocalDate.now().toString(),
     val selectedEnemy: KboTeam? = null,
     val selectedStadium: String = "",
-    val gameResult: GameResult = GameResult.WIN,
+    val gameResult: GameResult = GameResult.DRAW,
     val homeScore: Int = 0,
     val awayScore: Int = 0,
     val variables: List<VariableInput> = emptyList()
