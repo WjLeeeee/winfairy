@@ -37,6 +37,8 @@
     <string name="stadium">stadium</string>
     <string name="regis_up_comming_game">⚾️ Regis Intuitive scheduled</string>
     <string name="registered">Registered.</string>
+    <string name="notification_permission_guide">" 음성듣기번역하기 언어전환영어 If you turn on the notification, you can get analytical tips a day before the game!"</string>
+    <string name="go_settings">Go Settings</string>
     <string name="up_coming_game_record">Recording the results of the game</string>
     <string name="up_coming_game_record_content">Did you finish your in-person experience? Write down the results</string>
     <string name="up_coming_game_delete">Deleted scheduled matches</string>

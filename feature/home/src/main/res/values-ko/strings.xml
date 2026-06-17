@@ -37,6 +37,8 @@
     <string name="stadium">구장</string>
     <string name="regis_up_comming_game">⚾️ 직관 예정 등록</string>
     <string name="registered">등록되었습니다.</string>
+    <string name="notification_permission_guide">알림을 켜면 경기 하루 전에 분석 팁을 받을 수 있어요!</string>
+    <string name="go_settings">설정으로 이동</string>
     <string name="up_coming_game_record">경기 결과 기록하기</string>
     <string name="up_coming_game_record_content">직관을 마쳤나요? 결과를 기록해보세요</string>
     <string name="up_coming_game_delete">예정 경기 삭제</string>
