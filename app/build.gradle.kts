@@ -99,6 +99,11 @@ dependencies {
     implementation(libs.firebase.analytics)
     implementation(libs.firebase.crashlytics)
 
+    //WrokManager + 알림
+    implementation(libs.androidx.work.runtime.ktx)
+    implementation(libs.androidx.hilt.work)
+    ksp(libs.androidx.hilt.compiler)
+
     implementation(project(":core:designsystem"))
     implementation(project(":core:navigation"))
     implementation(project(":core:model"))
