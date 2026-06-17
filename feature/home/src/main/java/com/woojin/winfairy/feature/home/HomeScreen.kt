@@ -1,7 +1,13 @@
 package com.woojin.winfairy.feature.home
 
+import android.Manifest
 import android.annotation.SuppressLint
+import android.content.Intent
+import android.content.pm.PackageManager
+import android.os.Build
+import android.provider.Settings
 import android.widget.Toast
+import androidx.annotation.RequiresApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -21,6 +27,10 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SecondaryTabRow
+import androidx.compose.material3.SnackbarDuration
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
+import androidx.compose.material3.SnackbarResult
 import androidx.compose.material3.TabRowDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -29,6 +39,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -41,6 +52,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.core.content.ContextCompat
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import com.woojin.winfairy.core.model.GameRecord
 import com.woojin.winfairy.core.model.GameResult
@@ -53,7 +65,9 @@ import com.woojin.winfairy.feature.home.components.AddRecordFab
 import com.woojin.winfairy.feature.home.record.RecordItem
 import com.woojin.winfairy.feature.home.upcomingmatch.AddUpComingMatchBottomSheet
 import com.woojin.winfairy.feature.home.upcomingmatch.UpComingMatchItem
+import kotlinx.coroutines.launch
 
+@RequiresApi(Build.VERSION_CODES.O)
 @SuppressLint("LocalContextGetResourceValueCall")
 @Composable
 fun HomeScreen(
@@ -64,6 +78,8 @@ fun HomeScreen(
     homeViewModel: HomeViewModel = hiltViewModel()
 ) {
     val context = LocalContext.current
+    val snackBarHostState = remember { SnackbarHostState() }
+    val scope = rememberCoroutineScope()
     val allRecord by homeViewModel.allRecord.collectAsState()
     val winRate by homeViewModel.winRate.collectAsState()
     val tier by homeViewModel.tier.collectAsState()
@@ -79,7 +95,8 @@ fun HomeScreen(
         containerColor = MaterialTheme.colorScheme.primary,
         floatingActionButton = {
             AddRecordFab { onComplete(allRecord.size + 1) }
-        }
+        },
+        snackbarHost = { SnackbarHost(snackBarHostState) }
     ) { innerPadding ->
         Column(
             modifier = Modifier
@@ -142,8 +159,34 @@ fun HomeScreen(
             registerBtn = { upcomingGame ->
                 homeViewModel.regisUpComingGame(upcomingGame)
                 planVisitBottomSheet = false
-                Toast.makeText(context, context.getString(R.string.registered), Toast.LENGTH_SHORT)
-                    .show()
+                // 알림 권한 없으면 안내
+                val granted = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                    ContextCompat.checkSelfPermission(
+                        context, Manifest.permission.POST_NOTIFICATIONS
+                    ) == PackageManager.PERMISSION_GRANTED
+                } else {
+                    true  // Android 12 이하는 권한 불필요
+                }
+
+                if (granted) {
+                    Toast.makeText(
+                        context, context.getString(R.string.registered), Toast.LENGTH_SHORT
+                    ).show()
+                } else {
+                    scope.launch {
+                        val result = snackBarHostState.showSnackbar(
+                            message = context.getString(R.string.notification_permission_guide),
+                            actionLabel = context.getString(R.string.go_settings),
+                            duration = SnackbarDuration.Long
+                        )
+                        if (result == SnackbarResult.ActionPerformed) {
+                            val intent = Intent(Settings.ACTION_APP_NOTIFICATION_SETTINGS).apply {
+                                putExtra(Settings.EXTRA_APP_PACKAGE, context.packageName)
+                            }
+                            context.startActivity(intent)
+                        }
+                    }
+                }
             },
         )
     }
